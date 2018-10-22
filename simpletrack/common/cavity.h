@@ -12,8 +12,8 @@
 
 typedef struct {
     REAL(voltage);
-    REAL(frequency);
-    REAL(lag);
+    REAL(kfreq);
+    REAL(phase);
 } Cavity;
 
 void Cavity_track(ELEMENT_MEM Cavity *el, PARTICLE pp){
@@ -23,16 +23,17 @@ void Cavity_track(ELEMENT_MEM Cavity *el, PARTICLE pp){
     REAL(const delta) = DELTA(pp);
     REAL(const tau) = TAU(pp);
     REAL(const chi) = CHI(pp);
+    REAL(const mass0) = MASS0(pp);
 
     REAL(const phase) = el->phase - el->kfreq*tau;
     REAL(const deltae) = (chi*charge0) * (el->voltage * sin(phase)) ;
 
     REAL(const rep) = sqrt(delta*delta+2*delta+1/(beta0*beta0)) + deltae/p0c;
-    REAL(const bg0) = p0c/mass0;
-    REAL(const rpp) = sqrt(rep*rep - bg0**2);
-    RPP(pp)=rpp;
-    DELTA(pp) = rpp-1;
-    beta = rpp/rep;
+    REAL(const ibg0) = p0c/mass0;
+    REAL(const irpp) = sqrt(rep*rep - ibg0*ibg0);
+    RPP(pp)=1/irpp;
+    DELTA(pp) = irpp-1;
+    REAL(const beta) = irpp/rep;
     RVV(pp) = beta/beta0;
     ZETA(pp) = tau*beta;
 };

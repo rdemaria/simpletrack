@@ -6,7 +6,7 @@ typedef enum type_t {
   DriftExactID = 3,
   MultipoleID = 4,
   CavityID = 5,
-  XYShitID = 6,
+  XYShiftID = 6,
   SRotationID = 7
 } type_t;
 

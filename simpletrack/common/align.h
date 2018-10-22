@@ -22,6 +22,8 @@ typedef struct {
 } SRotation;
 
 void SRotation_track(ELEMENT_MEM SRotation *el, PARTICLE pp){
+    REAL(const cos_z) = el->cos_z;
+    REAL(const sin_z) = el->sin_z;
     REAL() x,y;
     x=X(pp); y=Y(pp);
     X(pp) = cos_z*x + sin_z*y;

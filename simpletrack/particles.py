@@ -1,4 +1,7 @@
+import numpy as np
+
 from cobjects import CObject, CField
+
 
 
 ## chi = q/q_0 m_0/m
@@ -9,24 +12,37 @@ from cobjects import CObject, CField
 class Particles(CObject):
     pmass=938.272046e6
     _typeid=0
+    def _set_p0c(self):
+        energy0=np.sqrt(self.p0c**2+self.mass0**2)
+        self.beta0=self.p0c/energy0
+
+    def _set_delta(self):
+        rep=np.sqrt(self.delta**2+2*self.delta+1/self.beta0**2)
+        irpp=1+self.delta
+        self.rpp=1/irpp
+        beta=rep*self.rpp
+        self.rvv=beta/self.beta0
+
     nparticles=CField(0,'int64',const=True)
     x      =CField( 1,'float64',length='nparticles',default=0)
     px     =CField( 2,'float64',length='nparticles',default=0)
     y      =CField( 3,'float64',length='nparticles',default=0)
     py     =CField( 4,'float64',length='nparticles',default=0)
     zeta   =CField( 5,'float64',length='nparticles',default=0)
-    delta  =CField( 6,'float64',length='nparticles',default=0)
+    delta  =CField( 6,'float64',length='nparticles',default=0,setter=_set_delta)
     rpp    =CField( 7,'float64',length='nparticles',default=1)
     rvv    =CField( 8,'float64',length='nparticles',default=1)
-    mass0  =CField(10,'float64',length='nparticles',default=pmass)
-    p0c    =CField(10,'float64',length='nparticles',default=1e9)
-    beta0  =CField( 9,'float64',length='nparticles',default=1)
-    charge0=CField(11,'float64',length='nparticles',default=1)
-    rmass  =CField(12,'float64',length='nparticles',default=1)
-    rcharge=CField(13,'float64',length='nparticles',default=1)
-    chi    =CField(14,'float64',length='nparticles',default=1)
-    turns  =CField(15,'int64',length='nparticles',default=0)
-    islost =CField(16,'int64',length='nparticles',default=0)
+    mass0  =CField( 9,'float64',length='nparticles',default=pmass)
+    p0c    =CField(10,'float64',length='nparticles',default=0,setter=_set_p0c)
+    beta0  =CField(11,'float64',length='nparticles',default=1)
+    charge0=CField(12,'float64',length='nparticles',default=1)
+    rmass  =CField(13,'float64',length='nparticles',default=1)
+    rcharge=CField(14,'float64',length='nparticles',default=1)
+    chi    =CField(15,'float64',length='nparticles',default=1)
+    turns  =CField(16,'int64',length='nparticles',default=0)
+    islost =CField(17,'int64',length='nparticles',default=0)
+
+
 
     @classmethod
     def _gen_opencl_copyparticle(cls):

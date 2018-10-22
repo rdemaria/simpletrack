@@ -5,6 +5,8 @@
 #include "common/aperture.h"
 #include "common/drift.h"
 #include "common/multipole.h"
+#include "common/cavity.h"
+#include "common/align.h"
 
 __kernel void track(__global slot_t *particles_p,
                     __global slot_t *elements_p,
@@ -36,7 +38,25 @@ __kernel void track(__global slot_t *particles_p,
                   Drift_track((__global Drift *) elem_p, &particle);
                   if (check_bounds(&particle,1.0)) particle.islost=-ielem;
                   break;
+                case DriftExactID:
+                  DriftExact_track((__global Drift *) elem_p, &particle);
+                  if (check_bounds(&particle,1.0)) particle.islost=-ielem;
+                  break;
+                case MultipoleID:
+                  Multipole_track((__global Multipole *) elem_p, &particle);
+                  break;
+                case CavityID:
+                  Cavity_track((__global Cavity *) elem_p, &particle);
+                  break;
+                case XYShiftID:
+                  XYShift_track((__global XYShift *) elem_p, &particle);
+                  break;
+                case SRotationID:
+                  SRotation_track((__global SRotation *) elem_p, &particle);
+                  break;
               };
+            } else {
+                break;
             };
         };
         if (particle.islost>=0) {particle.turns++;}  else  break; ;
