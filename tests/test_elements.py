@@ -22,7 +22,7 @@ def mktest(elem,elemdata,pdata,tol=0,rtol=0):
         setattr(p,k,v)
      getattr(six,elem)(**elemdata).track(pref)
      elements = sim.Elements()
-     getattr(sim,elem)(elements,**elemdata)
+     getattr(elements,elem)(**elemdata)
      cljob = sim.TrackJobCL(p, elements, device="0.0")
      cljob.track(1)
      cljob.collect()
