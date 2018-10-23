@@ -7,29 +7,33 @@ import simpletrack as sim
 sim.Particles._gen_common_particle_slots()
 */
 #define PARTICLE_SLOTS  \
-  REAL(x);              \
-  REAL(px);             \
-  REAL(y);              \
-  REAL(py);             \
-  REAL(zeta);           \
-  REAL(delta);          \
-  REAL(rpp);            \
-  REAL(rvv);            \
-  REAL(mass0);          \
-  REAL(p0c);            \
-  REAL(beta0);            \
-  REAL(charge0);        \
-  REAL(rmass);          \
-  REAL(rcharge);        \
-  REAL(chi);            \
-  INT(turns);           \
-  INT(islost);          \
+   REAL(mass0);          \
+   REAL(p0c);            \
+   REAL(beta0);          \
+   REAL(charge0);        \
+   REAL(x);              \
+   REAL(px);             \
+   REAL(y);              \
+   REAL(py);             \
+   REAL(zeta);           \
+   REAL(delta);          \
+   REAL(rpp);            \
+   REAL(rvv);            \
+   REAL(rmass);          \
+   REAL(rcharge);        \
+   REAL(chi);            \
+   INT(turns);           \
+   INT(islost);          \
 /* end python */
 
 /* python
 import simpletrack as sim
 sim.Particles._gen_common_particle_accessors()
 */
+#define MASS0(p)   PARTICLE_GET(p,mass0)
+#define P0C(p)     PARTICLE_GET(p,p0c)
+#define BETA0(p)   PARTICLE_GET(p,beta0)
+#define CHARGE0(p) PARTICLE_GET(p,charge0)
 #define X(p)       PARTICLE_GET(p,x)
 #define PX(p)      PARTICLE_GET(p,px)
 #define Y(p)       PARTICLE_GET(p,y)
@@ -38,11 +42,6 @@ sim.Particles._gen_common_particle_accessors()
 #define DELTA(p)   PARTICLE_GET(p,delta)
 #define RPP(p)     PARTICLE_GET(p,rpp)
 #define RVV(p)     PARTICLE_GET(p,rvv)
-#define BETA0(p)   PARTICLE_GET(p,beta0)
-#define MASS0(p)   PARTICLE_GET(p,mass0)
-#define P0C(p)     PARTICLE_GET(p,p0c)
-#define BETA0(p)   PARTICLE_GET(p,beta0)
-#define CHARGE0(p) PARTICLE_GET(p,charge0)
 #define RMASS(p)   PARTICLE_GET(p,rmass)
 #define RCHARGE(p) PARTICLE_GET(p,rcharge)
 #define CHI(p)     PARTICLE_GET(p,chi)
