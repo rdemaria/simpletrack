@@ -3,24 +3,23 @@ import numpy as np
 import sixtracktools
 import simpletrack as sim
 
-elem=sim.ElementBuilder()
-elem.gen_builder()
+elements=sim.Elements()
 
 six = sixtracktools.SixInput('.')
-line, rest, iconv = six.expand_struct(convert=elem.gen_builder())
+line, rest, iconv = six.expand_struct(convert=elements.gen_builder())
 sixdump = sixtracktools.SixDump101('res/dump3.dat')[::2]
-elements=elem.elements
 
 
-npart=60
+npart=20000
 particles = sim.Particles(nparticles=npart)
 particles.p0c=7000e6
-particles.px=np.linspace(0,0.0001,npart)
+particles.px=np.linspace(0,0.0000,npart)
 
 sim.TrackJobCL.print_devices()
 cljob = sim.TrackJobCL(particles, elements, device="0.0",dump_element=0)
 import time;start=time.time()
-cljob.track(1000);cljob.collect()
+cljob.track(10)
+cljob.collect()
 print(time.time()-start)
 
 
