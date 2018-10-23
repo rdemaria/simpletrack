@@ -12,6 +12,25 @@ from cobjects import CObject, CField
 class Particles(CObject):
     pmass=938.272046e6
     _typeid=0
+    nparticles=CField(0,'int64',const=True)
+    mass0  =CField( 1,'float64',length='nparticles',default=pmass)
+    p0c    =CField( 2,'float64',length='nparticles',default=0,setter=_set_p0c)
+    beta0  =CField( 3,'float64',length='nparticles',default=1)
+    charge0=CField( 4,'float64',length='nparticles',default=1)
+    x      =CField( 5,'float64',length='nparticles',default=0)
+    px     =CField( 6,'float64',length='nparticles',default=0)
+    y      =CField( 7,'float64',length='nparticles',default=0)
+    py     =CField( 8,'float64',length='nparticles',default=0)
+    zeta   =CField( 9,'float64',length='nparticles',default=0)
+    delta  =CField(10,'float64',length='nparticles',default=0,setter=_set_delta)
+    rpp    =CField(11,'float64',length='nparticles',default=1)
+    rvv    =CField(12,'float64',length='nparticles',default=1)
+    rmass  =CField(13,'float64',length='nparticles',default=1)
+    rcharge=CField(14,'float64',length='nparticles',default=1)
+    chi    =CField(15,'float64',length='nparticles',default=1)
+    turns  =CField(16,'int64',length='nparticles',default=0)
+    islost =CField(17,'int64',length='nparticles',default=0)
+
     def _set_p0c(self):
         energy0=np.sqrt(self.p0c**2+self.mass0**2)
         self.beta0=self.p0c/energy0
@@ -23,24 +42,6 @@ class Particles(CObject):
         beta=rep*self.rpp
         self.rvv=beta/self.beta0
 
-    nparticles=CField(0,'int64',const=True)
-    mass0  =CField( 1,'float64',length='nparticles',default=pmass)
-    p0c    =CField( 2,'float64',length='nparticles',default=0,setter=_set_p0c)
-    beta0  =CField( 3,'float64',length='nparticles',default=1)
-    charge0=CField( 4,'float64',length='nparticles',default=1)
-    x      =CField( 5,'float64',length='nparticles',default=0)
-    px     =CField( 6,'float64',length='nparticles',default=0)
-    y      =CField( 7,'float64',length='nparticles',default=0)
-    py     =CField( 8,'float64',length='nparticles',default=0)
-    zeta   =CField(13,'float64',length='nparticles',default=0)
-    delta  =CField(14,'float64',length='nparticles',default=0,setter=_set_delta)
-    rpp    =CField(15,'float64',length='nparticles',default=1)
-    rvv    =CField(16,'float64',length='nparticles',default=1)
-    rmass  =CField(17,'float64',length='nparticles',default=1)
-    rcharge=CField( 9,'float64',length='nparticles',default=1)
-    chi    =CField(10,'float64',length='nparticles',default=1)
-    turns  =CField(11,'int64',length='nparticles',default=0)
-    islost =CField(12,'int64',length='nparticles',default=0)
 
 
 
