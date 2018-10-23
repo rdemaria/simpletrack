@@ -162,7 +162,9 @@ class BeamBeam6D(CObject):
         CObject.__init__(self, size=len(data), data=data, **kwargs)
 
 
-element_types = {'Cavity': Cavity,
+
+class Elements():
+    element_types = {'Cavity': Cavity,
                  'Drift': Drift,
                  'DriftExact': DriftExact,
                  'Multipole': Multipole,
@@ -173,18 +175,18 @@ element_types = {'Cavity': Cavity,
                  'BeamBeam4D': BeamBeam4D,
                  'Line': Line,
                  }
+    def _mk_fun(self,buff,cls):
+        def fun(*args,**nargs):
+            return cls(buff,*args,**nargs)
+        return fun
 
-class ElementBuilder():
     def __init__(self):
-        self.elements=CBuffer()
+        self.buffer=CBuffer()
+        for name,cls in self.element_types.items():
+            setattr(self,name,self._mk_fun(self.buffer,cls))
 
     def gen_builder(self):
-        def mk_fun(buff,cls):
-            def fun(*args,**nargs):
-                return cls(buff,*args,**nargs)
-            return fun
         out={}
-        for name,cls in element_types.items():
-            out[name]=mk_fun(self.elements,cls)
+        for name,cls in self.element_types.items():
+            out[name]=getattr(self,name)
         return out
-
