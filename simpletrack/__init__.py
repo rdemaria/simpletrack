@@ -1,4 +1,4 @@
 from .particles import Particles
-from .elements import Elements, Drift, Line
+from .elements import *
 from .cltrack import TrackJobCL
 
