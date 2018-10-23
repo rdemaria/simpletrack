@@ -12,6 +12,19 @@ from cobjects import CObject, CField
 class Particles(CObject):
     pmass=938.272046e6
     _typeid=0
+
+    def _set_p0c(self):
+        energy0=np.sqrt(self.p0c**2+self.mass0**2)
+        self.beta0=self.p0c/energy0
+
+    def _set_delta(self):
+        rep=np.sqrt(self.delta**2+2*self.delta+1/self.beta0**2)
+        irpp=1+self.delta
+        self.rpp=1/irpp
+        beta=rep*self.rpp
+        self.rvv=beta/self.beta0
+
+    # memory layout
     nparticles=CField(0,'int64',const=True)
     mass0  =CField( 1,'float64',length='nparticles',default=pmass)
     p0c    =CField( 2,'float64',length='nparticles',default=0,setter=_set_p0c)
@@ -30,17 +43,6 @@ class Particles(CObject):
     chi    =CField(15,'float64',length='nparticles',default=1)
     turns  =CField(16,'int64',length='nparticles',default=0)
     islost =CField(17,'int64',length='nparticles',default=0)
-
-    def _set_p0c(self):
-        energy0=np.sqrt(self.p0c**2+self.mass0**2)
-        self.beta0=self.p0c/energy0
-
-    def _set_delta(self):
-        rep=np.sqrt(self.delta**2+2*self.delta+1/self.beta0**2)
-        irpp=1+self.delta
-        self.rpp=1/irpp
-        beta=rep*self.rpp
-        self.rvv=beta/self.beta0
 
 
 
