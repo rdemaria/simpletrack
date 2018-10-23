@@ -48,27 +48,30 @@ class TrackJobCL(object):
         self.particles_buf = self.particles._get_buffer().view('uint64')
         self.particles_g = pyopencl.Buffer(self.ctx, clrw,
                                            hostbuf=self.particles_buf)
-        self.elements_buf = self.elements._data_i64
+        self.elements_buf = self.elements.buffer._data_i64
         self.elements_g = pyopencl.Buffer(self.ctx, clro,
                                           hostbuf=self.elements_buf)
-        self.nelems = np.int64(self.elements.n_objects)
+        self.nelems = np.int64(self.elements.buffer.n_objects)
         self.npart = np.int64(self.particles.nparticles)
 
-    def set_dump_element(self, nturns):
-        self.dump_element_nturns = np.int64(nturns)
-        size=self.nelems*self.npart*nturns
+    def set_dump_element(self, turns):
+        self.dump_element_turns = np.int64(turns)
+        size=self.nelems*self.npart*turns
         self.dump_element = Particles(nparticles=size)
         self.dump_element_buf = self.dump_element._get_buffer().view('uint64')
         self.dump_element_g = pyopencl.Buffer(self.ctx, clrw,
                                               hostbuf=self.dump_element_buf)
 
-    def track(self, nturns=1):
-        nturns = np.int64(nturns)
+    def track(self, turns=1):
+        """
+        turns -> max number of turns
+        """
+        turns = np.int64(turns)
         self.program.track(self.queue, [self.npart], None,
                            self.particles_g,
                            self.dump_element_g,
                            self.elements_g, self.nelems,
-                           nturns, self.dump_element_nturns)
+                           turns, self.dump_element_turns)
 
     def collect(self):
         pyopencl.enqueue_copy(self.queue,
