@@ -9,11 +9,12 @@
 #include "common/align.h"
 
 __kernel void track(__global slot_t *particles_p,
+                    __global slot_t *dump_elements_p,
                     __global slot_t *elements_p,
                     long nelems,
 //                    __global slot_t *output_p,
                     long nturns,
-                    long nturns_ebe){
+                    long dump_element_nturns){
 
 
     // Setup Elements
@@ -31,6 +32,14 @@ __kernel void track(__global slot_t *particles_p,
     for (int iturn=0; iturn<nturns; iturn++){
         for (size_t ielem=0; ielem<nelems; ielem++){
             if (particle.islost>=0){
+              // Element-by-element
+              if (particle.turns<dump_element_nturns){
+                  copy_particle_to(dump_elements_p,
+                                   partid*nelems*dump_element_nturns+
+                                   ielem*dump_element_nturns+
+                                   particle.turns,
+                                   &particle);
+              };// end element-by-element
               elemtype = element[ielem].type;
               elem_p = &elements_p[(element[ielem].address-base)/8];
               switch (elemtype){

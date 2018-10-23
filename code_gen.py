@@ -1,18 +1,28 @@
 #!/usr/bin/env python3
 
-import os,sys
+import os,sys,tempfile
 
 import subprocess
 def exe(input):
-    return subprocess.run('python3', input=input,
+    sub=subprocess.run('python3', input=input,
                    stdout=subprocess.PIPE,
-                   universal_newlines=True).stdout
+                   universal_newlines=True)
+    if sub.returncode>0:
+        print("Attempting running code:")
+        print(cmd)
+        print("Output:")
+        print(sub.stdout)
+        raise ValueError("Code generation failed")
+    return sub.stdout
 
 if sys.argv[1]=='-i':
-    inplace=True
+    inplace="yes"
+    filename=sys.argv[2]
+elif sys.argv[1]=='-d':
+    inplace="diff"
     filename=sys.argv[2]
 else:
-    inplace=False
+    inplace="print"
     filename=sys.argv[1]
     if not os.path.isfile(filename):
         raise ValueError(f"{filename} does not exist")
@@ -27,7 +37,8 @@ for line in open(filename):
         cmdapp=True
     elif line.startswith("/* end python"):
         newfileapp=True
-        newfile.append(exe(''.join(cmd)))
+        if len(cmd)>0:
+          newfile.append(exe(''.join(cmd)))
     elif cmdapp==True:
         if line.startswith("*/"):
             cmdapp=False
@@ -39,7 +50,13 @@ for line in open(filename):
         newfile.append(line)
 
 newfile=''.join(newfile)
-if inplace:
+if inplace=="yes":
     open(filename,'w').write(newfile)
-else:
+elif inplace=="print":
     print(newfile)
+elif inplace=="diff":
+    tfile,tfilename=tempfile.mkstemp()
+    open(tfile,'w').write(newfile)
+    os.system(f"meld {filename} {tfilename}")
+    os.unlink(tfilename)
+

@@ -1,8 +1,5 @@
 import simpletrack as sim
 
-# create particles
-npart=100
-particles = sim.Particles(nparticles=npart)
 
 # alternate API
 elements = sim.Elements()
@@ -11,12 +8,18 @@ sim.Drift(elements, length=2.0)
 sim.Drift(elements, length=3.0)
 #line=sim.Line(elements)
 
+# create particles
+npart=1
+particles = sim.Particles(nparticles=npart)
+particles.px=0.001
 
 # OpenCL workflow
 sim.TrackJobCL.print_devices()
-cljob = sim.TrackJobCL(particles, elements, device="0.0")
+cljob = sim.TrackJobCL(particles, elements, device="0.0",dump_element=5)
 cljob.track(nturns=10)
 cljob.collect()
+
+cljob.dump_element.x
 
 cljob.track(nturns=10, nturns_ebe=10)
 cljob.track(nturns=10, nturns_ebe=10)

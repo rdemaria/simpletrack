@@ -45,8 +45,6 @@ class Particles(CObject):
     islost =CField(17,'int64',length='nparticles',default=0)
 
 
-
-
     @classmethod
     def _gen_opencl_copyparticle(cls):
         types={'float64':'f64','int64':'i64'}
