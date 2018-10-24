@@ -7,7 +7,7 @@
 #include "common/multipole.h"
 #include "common/cavity.h"
 #include "common/align.h"
-//#include "common/monitor.h"
+#include "common/monitor.h"
 #include "common/elements.h"
 
 
