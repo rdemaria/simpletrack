@@ -23,15 +23,20 @@ def speed(npart=20000,turns=10,device="0.0"):
   duration=(time.time()-start)
   return duration/turns, duration/(npart*turns)
 
-if len(sys.argv)==2:
+if len(sys.argv)>1:
     device=sys.argv[1]
 else:
     device="0.0"
 
+if len(sys.argv)>2:
+    start=int(sys.argv[2])
+else:
+    start=4
+
 print(f"turns npart t/turn[ms] t/turn/part[us]")
 turns=10
 sp1,rsp1=speed(1,turns,device=device)
-sp=0; npart=4;
+sp=0; npart=start;
 while sp<3*sp1:
     sp,rsp=speed(npart,turns,device=device)
     print(f"{turns:5} {npart:5} {sp*1e3:4.2f} {rsp*1e6:8.2f}")
