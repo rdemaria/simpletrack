@@ -39,25 +39,39 @@ class TrackJobCL(object):
     def __init__(self, particles, elements, device='0.0', dump_element=0):
         # self.line=line
         self.create_context(device)
-        self.prepare_particles(particles)
-        self.prepare_elements(elements)
-        self.prepare_output(dump_element)
+        self._set_particles(particles)
+        self._set_elements(elements)
+        self.set_output(dump_element)
 
-    def prepare_particles(self,particles):
+
+    def _set_particles(self,particles):
         self.particles = particles
         self.particles_buf = self.particles._get_slot_buffer()
         self.particles_g = pyopencl.Buffer(self.ctx, clrw,
                                            hostbuf=self.particles_buf)
         self.npart = np.int64(self.particles.nparticles)
 
-    def prepare_elements(self,elements):
+    def set_particles(self,particles):
+        old_npart=self.npart
+        self._set_particles(particles)
+        if self.particles.nparticles!=old_npart:
+            self.set_output(self.dump_element_turns)
+
+
+    def _set_elements(self,elements):
         self.elements = elements
         self.elements_buf = self.elements.buffer._data_i64
         self.elements_g = pyopencl.Buffer(self.ctx, clro,
                                           hostbuf=self.elements_buf)
         self.nelems = np.int64(self.elements.buffer.n_objects)
 
-    def prepare_output(self, turns):
+    def set_elements(self,elements):
+        old_nmonitor=self.nmonitor
+        self._set_elements(elements)
+        if self.nmonitor!=old_nmonitor:
+            self.set_output(self.dump_element_turns)
+
+    def set_output(self, turns):
         output=ParticlesSet()
 
         #Element DUMP
@@ -69,12 +83,16 @@ class TrackJobCL(object):
         self.output_buf = output.buffer._data_i64
         self.output_g = pyopencl.Buffer(self.ctx, clrw,
                                               hostbuf=self.output_buf)
+    def check_output(self,dump_element_turns):
+        if not hasattr(self,'output_buf'):
+            self.set_output(dump_element_turns)
 
     def track(self, turns=1):
         """
         turns -> max number of turns
         """
         turns = np.int64(turns)
+        self.set_output(self.dump_element_turns)
         self.program.track(self.queue, [self.npart], None,
                            self.particles_g,
                            self.output_g,

@@ -7,16 +7,12 @@ import numpy as np
 import sixtracktools
 import simpletrack as sim
 
-elements=sim.Elements()
 
-six = sixtracktools.SixInput('.')
-line, rest, iconv = six.expand_struct(convert=elements.gen_builder())
-
-def speed(npart=20000,turns=10,device="0.0"):
+def speed(cljob,npart=20000,turns=10,device="0.0"):
   particles = sim.Particles(nparticles=npart)
   particles.p0c=7000e6
   particles.px=np.linspace(0,0.0000,npart)
-  cljob = sim.TrackJobCL(particles, elements, device=device,dump_element=0)
+  cljob.set_particles(particles)
   start=time.time()
   cljob.track(10)
   cljob.collect()
@@ -31,14 +27,39 @@ else:
 if len(sys.argv)>2:
     start=int(sys.argv[2])
 else:
-    start=4
+    start=1
+
+if len(sys.argv)>3:
+    step=int(sys.argv[3])
+else:
+    step='log10'
+
+if len(sys.argv)>4:
+    stop=int(sys.argv[4])
+else:
+    stop='long'
+
+elements=sim.Elements()
+
+six = sixtracktools.SixInput('.')
+line, rest, iconv = six.expand_struct(convert=elements.gen_builder())
+
+particles = sim.Particles(nparticles=1)
+particles.p0c=7000e6
+cljob = sim.TrackJobCL(particles, elements, device=device,dump_element=0)
 
 print(f"turns npart t/turn[ms] t/turn/part[us]")
 turns=10
-sp1,rsp1=speed(1,turns,device=device)
+sp1,rsp1=speed(cljob,1,turns,device=device)
 sp=0; npart=start;
 while sp<3*sp1:
-    sp,rsp=speed(npart,turns,device=device)
+    sp,rsp=speed(cljob,npart,turns,device=device)
     print(f"{turns:5} {npart:5} {sp*1e3:4.2f} {rsp*1e6:8.2f}")
-    npart=int(npart*np.sqrt(2))
+    if step=='log10':
+       npart+=10**int(np.log10(npart))
+    else:
+       npart+=step
+    if not stop=='long':
+       if npart>stop:
+          break
 
