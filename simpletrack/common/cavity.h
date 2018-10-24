@@ -1,3 +1,7 @@
+#ifndef CAVITY_TRACK
+  #define CAVITY_TRACK
+#endif
+
 #ifndef ELEMENT_MEM
   #define ELEMENT_MEM
 #endif

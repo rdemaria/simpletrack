@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pyopencl
 
-from .particles import Particles
+from .particles import ParticlesSet
 
 modulepath = os.path.dirname(os.path.abspath(__file__))
 os.environ['PYOPENCL_COMPILER_OUTPUT'] = "1"
@@ -38,29 +38,37 @@ class TrackJobCL(object):
 
     def __init__(self, particles, elements, device='0.0', dump_element=0):
         # self.line=line
-        self.elements = elements
-        self.particles = particles
         self.create_context(device)
-        self.prepare_buffers()
-        self.set_dump_element(dump_element)
+        self.prepare_particles(particles)
+        self.prepare_elements(elements)
+        self.prepare_output(dump_element)
 
-    def prepare_buffers(self):
-        self.particles_buf = self.particles._get_buffer().view('uint64')
+    def prepare_particles(self,particles):
+        self.particles = particles
+        self.particles_buf = self.particles._get_slot_buffer()
         self.particles_g = pyopencl.Buffer(self.ctx, clrw,
                                            hostbuf=self.particles_buf)
+        self.npart = np.int64(self.particles.nparticles)
+
+    def prepare_elements(self,elements):
+        self.elements = elements
         self.elements_buf = self.elements.buffer._data_i64
         self.elements_g = pyopencl.Buffer(self.ctx, clro,
                                           hostbuf=self.elements_buf)
         self.nelems = np.int64(self.elements.buffer.n_objects)
-        self.npart = np.int64(self.particles.nparticles)
 
-    def set_dump_element(self, turns):
+    def prepare_output(self, turns):
+        output=ParticlesSet()
+
+        #Element DUMP
         self.dump_element_turns = np.int64(turns)
         size=self.nelems*self.npart*turns
-        self.dump_element = Particles(nparticles=size)
-        self.dump_element_buf = self.dump_element._get_buffer().view('uint64')
-        self.dump_element_g = pyopencl.Buffer(self.ctx, clrw,
-                                              hostbuf=self.dump_element_buf)
+        self.dump_element = output.Particles(nparticles=size,partid=-1)
+
+        # GPU preparation
+        self.output_buf = output.buffer._data_i64
+        self.output_g = pyopencl.Buffer(self.ctx, clrw,
+                                              hostbuf=self.output_buf)
 
     def track(self, turns=1):
         """
@@ -69,7 +77,7 @@ class TrackJobCL(object):
         turns = np.int64(turns)
         self.program.track(self.queue, [self.npart], None,
                            self.particles_g,
-                           self.dump_element_g,
+                           self.output_g,
                            self.elements_g, self.nelems,
                            turns, self.dump_element_turns)
 
@@ -78,5 +86,5 @@ class TrackJobCL(object):
                               self.particles_buf,
                               self.particles_g)
         pyopencl.enqueue_copy(self.queue,
-                              self.dump_element_buf,
-                              self.dump_element_g)
+                              self.output_buf,
+                              self.output_g)

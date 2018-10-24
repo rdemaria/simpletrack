@@ -1,7 +1,6 @@
 import numpy as np
 
-from cobjects import CObject, CField
-
+from cobjects import CBuffer, CObject, CField
 
 
 ## chi = q/q_0 m_0/m
@@ -41,9 +40,16 @@ class Particles(CObject):
     rmass  =CField(13,'float64',length='nparticles',default=1)
     rcharge=CField(14,'float64',length='nparticles',default=1)
     chi    =CField(15,'float64',length='nparticles',default=1)
-    turns  =CField(16,'int64',length='nparticles',default=0)
-    islost =CField(17,'int64',length='nparticles',default=0)
+    partid =CField(16,'int64',length='nparticles',default=0)
+    turns  =CField(17,'int64',length='nparticles',default=0)
+    islost =CField(18,'int64',length='nparticles',default=0)
 
+    def __init__(self,cbuffer=None,nparticles=0, partid=None,**nargs):
+        if partid is None:
+            partid=np.arange(nparticles)
+        CObject.__init__(self,cbuffer=cbuffer,
+                         nparticles=nparticles,partid=partid,
+                         **nargs)
 
     @classmethod
     def _gen_opencl_copyparticle(cls):
@@ -101,4 +107,14 @@ class Particles(CObject):
                 fdef=f"#define {name.upper()}(p)"
                 out.append(f"{fdef:18} PARTICLE_GET(p,{name})")
         print('\n'.join(out))
+
+
+class ParticlesSet(object):
+    def __init__(self):
+        self.buffer=CBuffer()
+        self.particles=[]
+    def Particles(self,*args,**nargs):
+        particles=Particles(self.buffer,*args,**nargs)
+        self.particles.append(particles)
+        return particles
 

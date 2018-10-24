@@ -46,8 +46,9 @@ void copy_particle_from(__global slot_t *particles_p,
       particle->rmass   =particles_p[1+12*npart+partid].f64 ;
       particle->rcharge =particles_p[1+13*npart+partid].f64 ;
       particle->chi     =particles_p[1+14*npart+partid].f64 ;
-      particle->turns   =particles_p[1+15*npart+partid].i64 ;
-      particle->islost  =particles_p[1+16*npart+partid].i64 ;
+      particle->partid  =particles_p[1+15*npart+partid].i64 ;
+      particle->turns   =particles_p[1+16*npart+partid].i64 ;
+      particle->islost  =particles_p[1+17*npart+partid].i64 ;
 };
 void copy_particle_to(__global slot_t *particles_p,
                    size_t partid,
@@ -68,8 +69,9 @@ void copy_particle_to(__global slot_t *particles_p,
       particles_p[1+12*npart+partid].f64= particle->rmass  ;
       particles_p[1+13*npart+partid].f64= particle->rcharge;
       particles_p[1+14*npart+partid].f64= particle->chi    ;
-      particles_p[1+15*npart+partid].i64= particle->turns  ;
-      particles_p[1+16*npart+partid].i64= particle->islost ;
+      particles_p[1+15*npart+partid].i64= particle->partid ;
+      particles_p[1+16*npart+partid].i64= particle->turns  ;
+      particles_p[1+17*npart+partid].i64= particle->islost ;
 };
 /* end python*/
 

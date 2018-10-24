@@ -22,6 +22,7 @@ sim.Particles._gen_common_particle_slots()
    REAL(rmass);          \
    REAL(rcharge);        \
    REAL(chi);            \
+   INT(partid);          \
    INT(turns);           \
    INT(islost);          \
 /* end python */
@@ -45,6 +46,7 @@ sim.Particles._gen_common_particle_accessors()
 #define RMASS(p)   PARTICLE_GET(p,rmass)
 #define RCHARGE(p) PARTICLE_GET(p,rcharge)
 #define CHI(p)     PARTICLE_GET(p,chi)
+#define PARTID(p)  PARTICLE_GET(p,partid)
 #define TURNS(p)   PARTICLE_GET(p,turns)
 #define ISLOST(p)  PARTICLE_GET(p,islost)
 /* end python */

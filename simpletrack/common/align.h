@@ -1,3 +1,12 @@
+#ifndef XYSHIFT_TRACK
+  #define XYSHIFT_TRACK
+#endif
+
+#ifndef SROTATION_TRACK
+  #define SROTATION_TRACK
+#endif
+
+
 #ifndef ELEMENT_MEM
   #define ELEMENT_MEM
 #endif

@@ -1,9 +1,9 @@
-#ifndef ELEMENT_MEM
-  #define ELEMENT_MEM
-#endif
-
 #ifndef NAN
   #include <math.h>
+#endif
+
+#ifndef  DRIFT_TRACK
+  #define DRIFT_TRACK
 #endif
 
 

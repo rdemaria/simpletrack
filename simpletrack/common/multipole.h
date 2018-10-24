@@ -1,3 +1,9 @@
+#ifndef MULTIPOLE_TRACK
+  #define MULTIPOLE_TRACK
+#endif
+
+
+
 typedef struct {
     INT(order) ;
     REAL(length) ;
