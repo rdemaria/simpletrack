@@ -158,7 +158,7 @@ class BeamBeam4D(CObject):
 
 class BeamBeam6D(CObject):
     _typeid = 9
-    size = CField(0, 'uint64', default=0)
+    size = CField(0, 'uint64', const=True,default=0)
     data = CField(1, 'float64',   default=0.0,
                   length='size', pointer=True)
 
@@ -166,19 +166,28 @@ class BeamBeam6D(CObject):
         CObject.__init__(self, size=len(data), data=data, **kwargs)
 
 
+class Monitor(CObject):
+    _typeid = 10
+    size = CField(0, 'int64', const=True, default=0)
+    start = CField(1, 'int64', default=0)
+    stop  = CField(2, 'int64', default=-1)
+    skip  = CField(3, 'int64', default= 1)
+    ref   = CField(4, 'int64', default= 0)
+
 
 class Elements():
     element_types = {'Cavity': Cavity,
-                 'Drift': Drift,
-                 'DriftExact': DriftExact,
-                 'Multipole': Multipole,
-                 'RFMultipole': RFMultipole,
-                 'SRotation': SRotation,
-                 'XYShift': XYShift,
-                 'BeamBeam6D': BeamBeam6D,
-                 'BeamBeam4D': BeamBeam4D,
-                 'Line': Line,
-                 }
+                     'Drift': Drift,
+                     'DriftExact': DriftExact,
+                     'Multipole': Multipole,
+                     'RFMultipole': RFMultipole,
+                     'SRotation': SRotation,
+                     'XYShift': XYShift,
+                     'BeamBeam6D': BeamBeam6D,
+                     'BeamBeam4D': BeamBeam4D,
+                     'Line': Line,
+                     'Monitor': Monitor,
+                     }
     def _mk_fun(self,buff,cls):
         def fun(*args,**nargs):
             return cls(buff,*args,**nargs)

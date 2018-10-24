@@ -1,27 +1,33 @@
 #include "common/buffer.h"
 #include "opencl/particlecl.h"
-#include "opencl/elementscl.h"
+#include "opencl/buffercl.h"
 
 #include "common/aperture.h"
 #include "common/drift.h"
 #include "common/multipole.h"
 #include "common/cavity.h"
 #include "common/align.h"
+#include "common/monitor.h"
+#include "common/elements.h"
+
 
 __kernel void track(__global slot_t *particles_p,
-                    __global slot_t *dump_elements_p,
+                    __global slot_t *output_p,
                     __global slot_t *elements_p,
                     long nelems,
-//                    __global slot_t *output_p,
                     long nturns,
                     long dump_element_nturns){
 
 
     // Setup Elements
-    __global Object * element = get_element_pointer(elements_p);
-    size_t base = get_base(elements_p);
+    __global Object *element = get_objects(elements_p);
+    size_t elem_base = get_base(elements_p);
     type_t elemtype;
-    __global slot_t * elem_p;
+    __global slot_t *elem_p;
+
+    // Setup Output
+    __global slot_t *dump_elements_p = get_object_pointer(output_p,0);
+    //
 
     // Setup particle
     size_t partid = get_global_id(0);
@@ -41,7 +47,7 @@ __kernel void track(__global slot_t *particles_p,
                                    &particle);
               };// end element-by-element
               elemtype = element[ielem].type;
-              elem_p = &elements_p[(element[ielem].address-base)/8];
+              elem_p = &elements_p[(element[ielem].address-elem_base)/8];
               switch (elemtype){
                 case DriftID:
                   Drift_track((__global Drift *) elem_p, &particle);
@@ -63,11 +69,16 @@ __kernel void track(__global slot_t *particles_p,
                 case SRotationID:
                   SRotation_track((__global SRotation *) elem_p, &particle);
                   break;
+                case MonitorID:
+                  Monitor_track((__global Monitor *) elem_p,
+                                &particle,
+                                output_p);
+                  break;
               };
             } else {
                 break;
-            };
-        };
+            }; // end if not lost
+        };//end for each element
         if (particle.islost>=0) {particle.turns++;}  else  break; ;
     };
 
