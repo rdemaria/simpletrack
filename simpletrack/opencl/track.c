@@ -7,7 +7,7 @@
 #include "common/multipole.h"
 #include "common/cavity.h"
 #include "common/align.h"
-#include "common/monitor.h"
+//#include "common/monitor.h"
 #include "common/elements.h"
 
 
@@ -69,11 +69,13 @@ __kernel void track(__global slot_t *particles_p,
                 case SRotationID:
                   SRotation_track((__global SRotation *) elem_p, &particle);
                   break;
+#ifdef MONITOR_TRACK
                 case MonitorID:
                   Monitor_track((__global Monitor *) elem_p,
                                 &particle,
                                 output_p);
                   break;
+#endif
               };
             } else {
                 break;
