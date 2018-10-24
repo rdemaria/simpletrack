@@ -36,7 +36,7 @@ else:
 
 if len(sys.argv)>4:
     stop=int(sys.argv[4])
-    fact=100
+    fact=10000
 else:
     stop='long'
     fact=3
