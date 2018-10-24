@@ -29,7 +29,7 @@ void Cavity_track(ELEMENT_MEM Cavity *el, PARTICLE pp){
     REAL(const deltae) = (chi*charge0) * (el->voltage * sin(phase)) ;
 
     REAL(const rep) = sqrt(delta*delta+2*delta+1/(beta0*beta0)) + deltae/p0c;
-    REAL(const ibg0) = p0c/mass0;
+    REAL(const ibg0) = mass0/p0c;
     REAL(const irpp) = sqrt(rep*rep - ibg0*ibg0);
     RPP(pp)=1/irpp;
     DELTA(pp) = irpp-1;

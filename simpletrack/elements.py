@@ -64,9 +64,13 @@ class Multipole(CObject):
 
     def __init__(self, cbuffer=None, knl=None, ksl=None, order=None, bal=None,
                  hxl=0, hyl=0, length=0):
+        if knl is None:
+            knl=[]
+        if ksl is None:
+            ksl=[]
         if order is None:
             if bal is None:
-                order = max(len(knl), len(ksl))-1
+                order=max(len(knl),len(ksl)-1)
             else:
                 order = len(bal)//2-1
         nbal = np.zeros(2*order+2, dtype=float)
