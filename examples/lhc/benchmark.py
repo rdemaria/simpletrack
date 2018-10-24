@@ -36,8 +36,10 @@ else:
 
 if len(sys.argv)>4:
     stop=int(sys.argv[4])
+    fact=100
 else:
     stop='long'
+    fact=3
 
 elements=sim.Elements()
 
@@ -52,7 +54,7 @@ print(f"turns npart t/turn[ms] t/turn/part[us]")
 turns=10
 sp1,rsp1=speed(cljob,1,turns,device=device)
 sp=0; npart=start;
-while sp<3*sp1:
+while sp<fact*sp1:
     sp,rsp=speed(cljob,npart,turns,device=device)
     print(f"{turns:5} {npart:5} {sp*1e3:4.2f} {rsp*1e6:8.2f}")
     if step=='log10':
