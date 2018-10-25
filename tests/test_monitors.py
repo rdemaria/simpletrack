@@ -28,5 +28,6 @@ nt=5
 particle=2
 turn=3
 
-assert(cljob.monitor[0].x.reshape(np,nt)[particle][1]==2.49600000e-04)
+def test_monitor():
+  assert(cljob.monitor[0].x.reshape(np,nt)[particle][1]==2.49600000e-04)
 

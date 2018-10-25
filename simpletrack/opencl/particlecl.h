@@ -75,3 +75,11 @@ void copy_particle_to(__global slot_t *particles_p,
 };
 /* end python*/
 
+
+int check_is_notlost(Particle *const particle_p){
+    return particle_p->islost>=0;
+};
+
+int increase_turn(Particle *const particle_p){
+    return particle_p->turns++;
+};

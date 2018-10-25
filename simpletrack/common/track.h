@@ -1,4 +1,4 @@
-
+// need definition of check_is_notlost, increase_turn
 
 void track_loop(Particle *const particle_p,
                 ELEMENT_MEM slot_t *output_p,
@@ -16,10 +16,13 @@ void track_loop(Particle *const particle_p,
     // Setup Output
     ELEMENT_MEM slot_t *dump_elements_p = get_object_pointer(output_p,0);
 
+    int isnotlost;
+
     // Track
     for (int iturn=0; iturn<nturns; iturn++){
         for (size_t ielem=0; ielem<nelems; ielem++){
-            if (particle_p->islost>=0){
+            isnotlost=check_is_notlost(particle_p);
+            if (isnotlost){
               // Element-by-element
               if (particle_p->turns<dump_element_nturns){
                   copy_particle_to(dump_elements_p,
@@ -63,7 +66,11 @@ void track_loop(Particle *const particle_p,
                 break;
             }; // end if not lost
         };//end for each element
-        if (particle_p->islost>=0) {particle_p->turns++;}  else  break; ;
+        if (isnotlost) {
+            increase_turn(particle_p);
+        } else {
+            break ;
+        };
     };
 
 };

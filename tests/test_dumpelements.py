@@ -25,5 +25,6 @@ turn=4
 
 data=cljob.dump_element.x.reshape(np,ne,nt)[particle,element,turn]
 
-assert data==0.0075
+def test_dumpelement():
+  assert data==0.0075
 
