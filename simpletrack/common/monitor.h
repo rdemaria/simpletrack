@@ -29,7 +29,6 @@ void Monitor_track(ELEMENT_MEM Monitor *el,
        if (el->rolling==1) pos=pos%el->turns;
        if (pos >= 0 && pos < el->turns) {
          size_t partid = pos + pp->partid*el->turns;
-         printf("pp %d\n",el->ref);
          ELEMENT_MEM slot_t *particles_p =
                                   get_object_pointer(output, el->ref);
          copy_particle_to(particles_p, partid, pp);
