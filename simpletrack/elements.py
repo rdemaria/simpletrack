@@ -28,8 +28,6 @@ _factorial = np.array([1,
 _clight = 299792458
 
 
-
-
 class Line(CObject):
     _typeid = 0
     n_elements = CField(0, "int64", const=True)
@@ -62,15 +60,14 @@ class Multipole(CObject):
     bal = CField(4, 'float64',    default=0.0,
                  length='2 * order + 2')
 
-    def __init__(self, cbuffer=None, knl=None, ksl=None, order=None, bal=None,
-                 hxl=0, hyl=0, length=0):
+    def __init__(self, knl=None, ksl=None, order=None, bal=None, **nargs):
         if knl is None:
-            knl=[]
+            knl = []
         if ksl is None:
-            ksl=[]
+            ksl = []
         if order is None:
             if bal is None:
-                order=max(len(knl),len(ksl)-1)
+                order = max(len(knl), len(ksl)-1)
             else:
                 order = len(bal)//2-1
         nbal = np.zeros(2*order+2, dtype=float)
@@ -81,8 +78,8 @@ class Multipole(CObject):
             nbal[1::2] /= _factorial[:order+1]
         else:
             nbal[:len(bal)] = bal
-        CObject.__init__(self, cbuffer=cbuffer, order=order, length=length,
-                         hxl=hxl, hyl=hyl, bal=nbal)
+        CObject.__init__(self, order=order, bal=nbal,**nargs)
+
 
 class RFMultipole(CObject):
     _typeid = 10
@@ -112,6 +109,7 @@ class RFMultipole(CObject):
             nbal[:len(bal)] = bal
         CObject.__init__(self, cbuffer=cbuffer, order=order, length=length,
                          hxl=hxl, hyl=hyl, bal=nbal)
+
 
 class Cavity(CObject):
     _typeid = 5
@@ -158,7 +156,7 @@ class BeamBeam4D(CObject):
 
 class BeamBeam6D(CObject):
     _typeid = 9
-    size = CField(0, 'uint64', const=True,default=0)
+    size = CField(0, 'uint64', const=True, default=0)
     data = CField(1, 'float64',   default=0.0,
                   length='size', pointer=True)
 
@@ -168,11 +166,11 @@ class BeamBeam6D(CObject):
 
 class Monitor(CObject):
     _typeid = 10
-    size = CField(0, 'int64', const=True, default=0)
+    turns = CField(0, 'int64', default=0)
     start = CField(1, 'int64', default=0)
-    stop  = CField(2, 'int64', default=-1)
-    skip  = CField(3, 'int64', default= 1)
-    ref   = CField(4, 'int64', default= 0)
+    skip = CField(2, 'int64', default=1)
+    rolling = CField(3, 'int64', default=0)
+    ref = CField(4, 'int64', default=0)
 
 
 class Elements():
@@ -188,18 +186,50 @@ class Elements():
                      'Line': Line,
                      'Monitor': Monitor,
                      }
-    def _mk_fun(self,buff,cls):
-        def fun(*args,**nargs):
-            return cls(buff,*args,**nargs)
+
+    def _mk_fun(self, buff, cls):
+        def fun(*args, **nargs):
+            return cls(cbuffer=buff, **nargs)
         return fun
 
-    def __init__(self):
-        self.buffer=CBuffer()
-        for name,cls in self.element_types.items():
-            setattr(self,name,self._mk_fun(self.buffer,cls))
+    @classmethod
+    def fromfile(cls, filename):
+        cbuffer = CBuffer.fromfile(filename)
+        return cls(cbuffer=cbuffer)
+
+    def tofile(self, filename):
+        self.cbuffer.tofile(filename)
+
+    def __init__(self, cbuffer=None):
+        if cbuffer is None:
+            self.cbuffer = CBuffer()
+        else:
+            self.cbuffer = cbuffer
+        for name, cls in self.element_types.items():
+            setattr(self, name, self._mk_fun(self.cbuffer, cls))
+            self.cbuffer.typeids[cls._typeid] = cls
 
     def gen_builder(self):
-        out={}
-        for name,cls in self.element_types.items():
-            out[name]=getattr(self,name)
+        out = {}
+        for name, cls in self.element_types.items():
+            out[name] = getattr(self, name)
         return out
+
+    def set_monitors(self,offset=0):
+        monitorid = self.element_types['Monitor']._typeid
+        monitors = []
+        nmonitor = 0
+        for i in range(self.cbuffer.n_objects):
+            if self.cbuffer.get_object_typeid(i) == monitorid:
+                monitor = self.cbuffer.get_object(i)
+                monitor.ref = nmonitor+offset
+                monitors.append(monitor)
+                nmonitor += 1
+        return monitors
+
+    def get_elements(self):
+        n = self.cbuffer.n_objects
+        return [self.cbuffer.get_object(i) for i in range(n)]
+
+    def get(self,objid):
+        return self.cbuffer.get_object(objid)

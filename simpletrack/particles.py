@@ -111,10 +111,10 @@ class Particles(CObject):
 
 class ParticlesSet(object):
     def __init__(self):
-        self.buffer=CBuffer()
+        self.cbuffer=CBuffer()
         self.particles=[]
-    def Particles(self,*args,**nargs):
-        particles=Particles(self.buffer,*args,**nargs)
+    def Particles(self,**nargs):
+        particles=Particles(cbuffer=self.cbuffer,**nargs)
         self.particles.append(particles)
         return particles
 

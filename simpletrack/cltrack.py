@@ -60,16 +60,15 @@ class TrackJobCL(object):
 
     def _set_elements(self,elements):
         self.elements = elements
-        self.elements_buf = self.elements.buffer._data_i64
+        self._monitors=self.elements.set_monitors(offset=1)
+        self.elements_buf = self.elements.cbuffer._data_i64
         self.elements_g = pyopencl.Buffer(self.ctx, clro,
                                           hostbuf=self.elements_buf)
-        self.nelems = np.int64(self.elements.buffer.n_objects)
+        self.nelems = np.int64(self.elements.cbuffer.n_objects)
 
     def set_elements(self,elements):
-        old_nmonitor=self.nmonitor
         self._set_elements(elements)
-        if self.nmonitor!=old_nmonitor:
-            self.set_output(self.dump_element_turns)
+        self.set_output(self.dump_element_turns)
 
     def set_output(self, turns):
         output=ParticlesSet()
@@ -79,20 +78,21 @@ class TrackJobCL(object):
         size=self.nelems*self.npart*turns
         self.dump_element = output.Particles(nparticles=size,partid=-1)
 
+        self.monitor=[]
+        for monitor in self._monitors:
+            size=self.npart*monitor.turns
+            self.monitor.append(output.Particles(nparticles=size,partid=-1))
+
         # GPU preparation
-        self.output_buf = output.buffer._data_i64
+        self.output_buf = output.cbuffer._data_i64
         self.output_g = pyopencl.Buffer(self.ctx, clrw,
                                               hostbuf=self.output_buf)
-    def check_output(self,dump_element_turns):
-        if not hasattr(self,'output_buf'):
-            self.set_output(dump_element_turns)
 
     def track(self, turns=1):
         """
         turns -> max number of turns
         """
         turns = np.int64(turns)
-        self.set_output(self.dump_element_turns)
         self.program.track(self.queue, [self.npart], None,
                            self.particles_g,
                            self.output_g,
