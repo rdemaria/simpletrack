@@ -137,11 +137,12 @@ class SRotation(CObject):
     cos_z = CField(0, 'float64',   default=1.0)
     sin_z = CField(1, 'float64',   default=0.0)
 
-    def __init__(self, cbuffer=None, angle=0):
+    def __init__(self, cbuffer=None, angle=0, **nargs):
         anglerad = angle/180*np.pi
-        cos_z = np.cos(angle)
-        sin_z = np.sin(angle)
-        CObject.__init__(self, cbuffer=cbuffer, cos_z=cos_z, sin_z=sin_z)
+        cos_z = np.cos(anglerad)
+        sin_z = np.sin(anglerad)
+        CObject.__init__(self, cbuffer=cbuffer,
+                         cos_z=cos_z, sin_z=sin_z,**nargs)
 
 
 class BeamBeam4D(CObject):

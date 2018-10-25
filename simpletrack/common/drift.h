@@ -14,8 +14,8 @@ typedef struct {
 
 void Drift_track(ELEMENT_MEM Drift *el, Particle *pp){
     REAL(const length) = el->length;
-    REAL(const xp) = XP(pp);
-    REAL(const yp) = YP(pp);
+    REAL(const xp) = PX(pp)*RPP(pp);
+    REAL(const yp) = PY(pp)*RPP(pp);
     X(pp)+= xp * length;
     Y(pp)+= yp * length;
     ZETA(pp) += length*(RVV(pp)-(1+(xp*xp+yp*yp)/2));

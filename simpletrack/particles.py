@@ -20,48 +20,52 @@ class Particles(CObject):
         rep=np.sqrt(self.delta**2+2*self.delta+1/self.beta0**2)
         irpp=1+self.delta
         self.rpp=1/irpp
-        beta=rep*self.rpp
+        beta=irpp/rep
         self.rvv=beta/self.beta0
 
     # memory layout
     nparticles=CField(0,'int64',const=True)
-    mass0  =CField( 1,'float64',length='nparticles',default=pmass)
-    p0c    =CField( 2,'float64',length='nparticles',default=0,setter=_set_p0c)
-    beta0  =CField( 3,'float64',length='nparticles',default=1)
-    charge0=CField( 4,'float64',length='nparticles',default=1)
-    x      =CField( 5,'float64',length='nparticles',default=0)
-    px     =CField( 6,'float64',length='nparticles',default=0)
-    y      =CField( 7,'float64',length='nparticles',default=0)
-    py     =CField( 8,'float64',length='nparticles',default=0)
-    zeta   =CField( 9,'float64',length='nparticles',default=0)
-    delta  =CField(10,'float64',length='nparticles',default=0,setter=_set_delta)
-    rpp    =CField(11,'float64',length='nparticles',default=1)
-    rvv    =CField(12,'float64',length='nparticles',default=1)
-    rmass  =CField(13,'float64',length='nparticles',default=1)
-    rcharge=CField(14,'float64',length='nparticles',default=1)
-    chi    =CField(15,'float64',length='nparticles',default=1)
-    partid =CField(16,'int64',length='nparticles',default=0)
-    turns  =CField(17,'int64',length='nparticles',default=0)
-    islost =CField(18,'int64',length='nparticles',default=0)
+    nstable=CField( 1,'int64',default=0)
+    mass0  =CField( 2,'float64',length='nparticles',default=pmass)
+    p0c    =CField( 3,'float64',length='nparticles',default=0,setter=_set_p0c)
+    beta0  =CField( 4,'float64',length='nparticles',default=1)
+    charge0=CField( 5,'float64',length='nparticles',default=1)
+    x      =CField( 6,'float64',length='nparticles',default=0)
+    px     =CField( 7,'float64',length='nparticles',default=0)
+    y      =CField( 8,'float64',length='nparticles',default=0)
+    py     =CField( 9,'float64',length='nparticles',default=0)
+    zeta   =CField(10,'float64',length='nparticles',default=0)
+    delta  =CField(11,'float64',length='nparticles',default=0,setter=_set_delta)
+    rpp    =CField(12,'float64',length='nparticles',default=1)
+    rvv    =CField(13,'float64',length='nparticles',default=1)
+    rmass  =CField(14,'float64',length='nparticles',default=1)
+    rcharge=CField(15,'float64',length='nparticles',default=1)
+    chi    =CField(16,'float64',length='nparticles',default=1)
+    partid =CField(17,'int64',length='nparticles',default=0)
+    turns  =CField(18,'int64',length='nparticles',default=0)
+    islost =CField(19,'int64',length='nparticles',default=0)
 
     def __init__(self,cbuffer=None,nparticles=0, partid=None,**nargs):
         if partid is None:
             partid=np.arange(nparticles)
         CObject.__init__(self,cbuffer=cbuffer,
-                         nparticles=nparticles,partid=partid,
+                         nparticles=nparticles,
+                         nstable=nparticles,
+                         partid=partid,
                          **nargs)
 
     @classmethod
     def _gen_opencl_copyparticle(cls):
+        idx=cls.mass0.index
         types={'float64':'f64','int64':'i64'}
         out=["""void copy_particle_from(__global slot_t *particles_p,
                    size_t partid,
                    Particle *particle){
       size_t npart =particles_p[0].i64;"""]
         for name,field in cls.get_fields():
-            if field.index>0:
+            if field.index>=idx:
                 ctype=f"{types[field.ftype]}"
-                data=f"particles_p[1+{field.index-1}*npart+partid]"
+                data=f"particles_p[{idx}+{field.index-idx}*npart+partid]"
                 out.append(f"      particle->{name:7} ={data}.{ctype} ;")
         out.append('};')
         print('\n'.join(out))
@@ -70,19 +74,20 @@ class Particles(CObject):
                    Particle *particle){
       size_t npart =particles_p[0].i64;"""]
         for name,field in cls.get_fields():
-            if field.index>0:
+            if field.index>=idx:
                 ctype=f"{types[field.ftype]}"
-                data=f"particles_p[1+{field.index-1}*npart+partid]"
+                data=f"particles_p[{idx}+{field.index-idx}*npart+partid]"
                 out.append(f"      {data}.{ctype}= particle->{name:7};")
         out.append('};')
         print('\n'.join(out))
 
     @classmethod
     def _gen_opencl_particle_type(cls):
+        idx=cls.mass0.index
         types={'float64':'double','int64':'long'}
         out=["typedef struct {"]
         for name,field in cls.get_fields():
-            if field.index>0:
+            if field.index>=idx:
                 out.append(f"    {types[field.ftype]} {name};")
         out.append('} Particle;')
         out.append("\n#define PARTICLE_GET(p,name) p.name")
@@ -90,10 +95,11 @@ class Particles(CObject):
 
     @classmethod
     def _gen_common_particle_slots(cls):
+        idx=cls.mass0.index
         types={'float64':'REAL','int64':'INT'}
         out=['#define PARTICLE_SLOTS  \\']
         for name,field in cls.get_fields():
-            if field.index>0:
+            if field.index>=idx:
                 ctype=types[field.ftype]
                 cdef=f" {ctype}({name});"
                 out.append(f"  {cdef:23}\\")
@@ -101,9 +107,10 @@ class Particles(CObject):
 
     @classmethod
     def _gen_common_particle_accessors(cls):
+        idx=cls.mass0.index
         out=[]
         for name,field in cls.get_fields():
-            if field.index>0:
+            if field.index>=idx:
                 fdef=f"#define {name.upper()}(p)"
                 out.append(f"{fdef:18} PARTICLE_GET(p,{name})")
         print('\n'.join(out))

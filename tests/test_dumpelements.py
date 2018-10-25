@@ -12,7 +12,8 @@ elements.Drift(length=3)
 particles = sim.Particles(nparticles=11)
 particles.px=np.linspace(0,0.001,particles.nparticles)
 
-cljob = sim.TrackJobCL(particles, elements, device="0.0",dump_element=5)
+cljob = sim.TrackJobCL(particles, elements,
+                       device="0.0",dump_element=5,debug=False)
 cljob.track(5)
 cljob.collect()
 

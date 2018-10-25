@@ -25,6 +25,7 @@ __kernel void track(__global slot_t *particles_p,
     // Copy to private
     Particle particle;
     Particle *const particle_p=&particle;
+    //printf("CL %d %15.3g\n", particles_p[0].i64,particles_p[4].f64);
     copy_particle_from(particles_p, partid, particle_p);
 
     //Track

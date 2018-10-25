@@ -6,8 +6,8 @@ import pyopencl
 from .particles import ParticlesSet
 
 modulepath = os.path.dirname(os.path.abspath(__file__))
-os.environ['PYOPENCL_COMPILER_OUTPUT'] = "1"
 srcpath = '-I%s' % modulepath
+os.environ['PYOPENCL_COMPILER_OUTPUT'] = "1"
 
 mf = pyopencl.mem_flags
 clrw = mf.READ_WRITE | mf.COPY_HOST_PTR
@@ -23,22 +23,26 @@ class TrackJobCL(object):
             for nd, device in enumerate(platform.get_devices()):
                 print(f"{np}.{nd}: {device.name}")
 
-    def build_program(self, src="track.c"):
-        src = open(os.path.join(modulepath, 'opencl', src)).read()
+    def build_program(self, src=None ,debug=True):
+        if src is None:
+           src = open(os.path.join(modulepath, 'opencl', 'track.c')).read()
+        else:
+           src = src
         options = [srcpath]
         self.program = pyopencl.Program(self.ctx, src).build(options=options)
 
-    def create_context(self, device):
+    def create_context(self, device, src=None, debug=False):
         np, nd = map(int, device.split('.'))
         platform = pyopencl.get_platforms()[np]
         device = platform.get_devices()[nd]
         self.ctx = pyopencl.Context([device])
         self.queue = pyopencl.CommandQueue(self.ctx)
-        self.build_program()
+        self.build_program(src=src,debug=debug)
 
-    def __init__(self, particles, elements, device='0.0', dump_element=0):
+    def __init__(self, particles, elements, device='0.0',
+                 dump_element=0,debug=True,src=None):
         # self.line=line
-        self.create_context(device)
+        self.create_context(device,debug=debug)
         self._set_particles(particles)
         self._set_elements(elements)
         self.set_output(dump_element)
@@ -49,12 +53,13 @@ class TrackJobCL(object):
         self.particles_buf = self.particles._get_slot_buffer()
         self.particles_g = pyopencl.Buffer(self.ctx, clrw,
                                            hostbuf=self.particles_buf)
-        self.npart = np.int64(self.particles.nparticles)
+        self.npart = np.int64(self.particles.partid.max()+1)
 
     def set_particles(self,particles):
         old_npart=self.npart
         self._set_particles(particles)
-        if self.particles.nparticles!=old_npart:
+        npart=self.particles.partid.max()+1
+        if npart!=old_npart:
             self.set_output(self.dump_element_turns)
 
 
