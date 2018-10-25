@@ -20,13 +20,13 @@ __kernel void track(__global slot_t *particles_p,
 
 
     // Setup Elements
-    __global Object *element = get_objects(elements_p);
+    ELEMENT_MEM Object *element = get_objects(elements_p);
     size_t elem_base = get_base(elements_p);
     type_t elemtype;
-    __global slot_t *elem_p;
+    ELEMENT_MEM slot_t *elem_p;
 
     // Setup Output
-    __global slot_t *dump_elements_p = get_object_pointer(output_p,0);
+    ELEMENT_MEM slot_t *dump_elements_p = get_object_pointer(output_p,0);
     //
 
     // Setup particle
@@ -51,28 +51,28 @@ __kernel void track(__global slot_t *particles_p,
               elem_p = &elements_p[(element[ielem].address-elem_base)/8];
               switch (elemtype){
                 case DriftID:
-                  Drift_track((__global Drift *) elem_p, particle_p);
+                  Drift_track((ELEMENT_MEM Drift *) elem_p, particle_p);
                   if (check_bounds(particle_p,1.0)) particle.islost=-ielem;
                   break;
                 case DriftExactID:
-                  DriftExact_track((__global Drift *) elem_p, particle_p);
+                  DriftExact_track((ELEMENT_MEM Drift *) elem_p, particle_p);
                   if (check_bounds(particle_p,1.0)) particle.islost=-ielem;
                   break;
                 case MultipoleID:
-                  Multipole_track((__global Multipole *) elem_p, particle_p);
+                  Multipole_track((ELEMENT_MEM Multipole *) elem_p, particle_p);
                   break;
                 case CavityID:
-                  Cavity_track((__global Cavity *) elem_p, particle_p);
+                  Cavity_track((ELEMENT_MEM Cavity *) elem_p, particle_p);
                   break;
                 case XYShiftID:
-                  XYShift_track((__global XYShift *) elem_p, particle_p);
+                  XYShift_track((ELEMENT_MEM XYShift *) elem_p, particle_p);
                   break;
                 case SRotationID:
-                  SRotation_track((__global SRotation *) elem_p, particle_p);
+                  SRotation_track((ELEMENT_MEM SRotation *) elem_p, particle_p);
                   break;
 #ifdef MONITOR_TRACK
                 case MonitorID:
-                  Monitor_track((__global Monitor *) elem_p,
+                  Monitor_track((ELEMENT_MEM Monitor *) elem_p,
                                 particle_p,
                                 output_p);
                   break;
