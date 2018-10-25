@@ -50,13 +50,13 @@ particles = sim.Particles(nparticles=1)
 particles.p0c=7000e6
 cljob = sim.TrackJobCL(particles, elements, device=device,dump_element=0)
 
-print(f"turns npart t/turn[ms] t/turn/part[us]")
+print(f"turns    npart t/turn[ms] t/turn/part[us]")
 turns=10
 sp1,rsp1=speed(cljob,1,turns,device=device)
 sp=0; npart=start;
 while sp<fact*sp1:
     sp,rsp=speed(cljob,npart,turns,device=device)
-    print(f"{turns:5} {npart:8} {sp*1e3:8.2f} {rsp*1e6:8.2f}")
+    print(f"{turns:5} {npart:8} {sp*1e3:10.2f} {rsp*1e6:10.2f}")
     if step=='log10':
        npart+=10**int(np.log10(npart))
     else:
