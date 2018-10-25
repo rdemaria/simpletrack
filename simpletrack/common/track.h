@@ -16,13 +16,10 @@ void track_loop(Particle *const particle_p,
     // Setup Output
     ELEMENT_MEM slot_t *dump_elements_p = get_object_pointer(output_p,0);
 
-    int isnotlost;
-
     // Track
     for (int iturn=0; iturn<nturns; iturn++){
         for (size_t ielem=0; ielem<nelems; ielem++){
-            isnotlost=check_is_notlost(particle_p);
-            if (isnotlost){
+            if (check_is_notlost(particle_p)){
               // Element-by-element
               if (particle_p->turns<dump_element_nturns){
                   copy_particle_to(dump_elements_p,
@@ -66,7 +63,7 @@ void track_loop(Particle *const particle_p,
                 break;
             }; // end if not lost
         };//end for each element
-        if (isnotlost) {
+        if (check_is_notlost(particle_p)) {
             increase_turn(particle_p);
         } else {
             break ;
