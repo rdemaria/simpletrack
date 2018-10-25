@@ -11,7 +11,7 @@ import simpletrack as sim
 def speed(cljob,npart=20000,turns=10,trials=1):
   particles = sim.Particles(nparticles=npart)
   particles.p0c=7000e6
-  particles.px=np.linspace(0,0.0000,npart)
+  particles.px=np.linspace(0,0.000001,npart)
   cljob.set_particles(particles)
   avg=0
   for i in range(trials):
