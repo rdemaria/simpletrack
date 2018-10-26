@@ -15,24 +15,44 @@ def exe(input):
         raise ValueError("Code generation failed")
     return sub.stdout
 
-if sys.argv[1]=='-i':
-    inplace="yes"
-    filename=sys.argv[2]
-elif sys.argv[1]=='-d':
-    inplace="diff"
-    filename=sys.argv[2]
-else:
+usage="""Usage:
+    code_gen.py filename  -> return generated code to stdout
+    code_gen.py -i filename -> change code in place
+    code_gen.py -d filename -> open meld to see difference between exiting and generarated code
+"""
+
+def check_file(filename):
+    if not os.path.isfile(filename):
+        print(usage)
+        raise ValueError(f"Error: {filename} does not exist")
+    return filename
+
+
+if len(sys.argv)==1:
+    print(usage)
+    sys.exit(0)
+elif len(sys.argv)==2:
     inplace="print"
     filename=sys.argv[1]
-    if not os.path.isfile(filename):
-        raise ValueError(f"{filename} does not exist")
+    check_file(filename)
+elif len(sys.argv)==3:
+    if sys.argv[1]=='-i':
+        inplace="yes"
+        filename=sys.argv[2]
+        check_file(filename)
+    elif sys.argv[1]=='-d':
+        inplace="diff"
+        check_file(filename)
+    else:
+       print(usage)
+       sys.exit(0)
 
 newfile=[]
 cmd=[]
 newfileapp=True
 cmdapp=False
 for line in open(filename):
-    if line.startswith("/* python"):
+    if line.startswith("/* code_gen python"):
         cmd=[]
         cmdapp=True
     elif line.startswith("/* end python"):

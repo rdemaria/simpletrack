@@ -25,32 +25,31 @@ class Particles(CObject):
 
     # memory layout
     nparticles=CField(0,'int64',const=True)
-    nstable=CField( 1,'int64',default=0)
-    mass0  =CField( 2,'float64',length='nparticles',default=pmass)
-    p0c    =CField( 3,'float64',length='nparticles',default=0,setter=_set_p0c)
-    beta0  =CField( 4,'float64',length='nparticles',default=1)
-    charge0=CField( 5,'float64',length='nparticles',default=1)
-    x      =CField( 6,'float64',length='nparticles',default=0)
-    px     =CField( 7,'float64',length='nparticles',default=0)
-    y      =CField( 8,'float64',length='nparticles',default=0)
-    py     =CField( 9,'float64',length='nparticles',default=0)
-    zeta   =CField(10,'float64',length='nparticles',default=0)
-    delta  =CField(11,'float64',length='nparticles',default=0,setter=_set_delta)
-    rpp    =CField(12,'float64',length='nparticles',default=1)
-    rvv    =CField(13,'float64',length='nparticles',default=1)
-    rmass  =CField(14,'float64',length='nparticles',default=1)
-    rcharge=CField(15,'float64',length='nparticles',default=1)
-    chi    =CField(16,'float64',length='nparticles',default=1)
-    partid =CField(17,'int64',length='nparticles',default=0)
-    turns  =CField(18,'int64',length='nparticles',default=0)
-    islost =CField(19,'int64',length='nparticles',default=0)
+    mass0  =CField( 1,'float64',length='nparticles',default=pmass)
+    p0c    =CField( 2,'float64',length='nparticles',default=0,setter=_set_p0c)
+    beta0  =CField( 3,'float64',length='nparticles',default=1)
+    charge0=CField( 4,'float64',length='nparticles',default=1)
+    x      =CField( 5,'float64',length='nparticles',default=0)
+    px     =CField( 6,'float64',length='nparticles',default=0)
+    y      =CField( 7,'float64',length='nparticles',default=0)
+    py     =CField( 8,'float64',length='nparticles',default=0)
+    zeta   =CField( 9,'float64',length='nparticles',default=0)
+    delta  =CField(10,'float64',length='nparticles',default=0,setter=_set_delta)
+    rpp    =CField(11,'float64',length='nparticles',default=1)
+    rvv    =CField(12,'float64',length='nparticles',default=1)
+    rmass  =CField(13,'float64',length='nparticles',default=1)
+    rcharge=CField(14,'float64',length='nparticles',default=1)
+    chi    =CField(15,'float64',length='nparticles',default=1)
+    partid =CField(16,'int64',length='nparticles',default=0)
+    turns  =CField(17,'int64',length='nparticles',default=0)
+    islost =CField(18,'int64',length='nparticles',default=0)
+
 
     def __init__(self,cbuffer=None,nparticles=0, partid=None,**nargs):
         if partid is None:
             partid=np.arange(nparticles)
         CObject.__init__(self,cbuffer=cbuffer,
                          nparticles=nparticles,
-                         nstable=nparticles,
                          partid=partid,
                          **nargs)
 
@@ -59,25 +58,45 @@ class Particles(CObject):
         idx=cls.mass0.index
         types={'float64':'f64','int64':'i64'}
         out=["""void copy_particle_from(__global slot_t *particles_p,
-                   size_t partid,
+                   size_t ipart,
                    Particle *particle){
       size_t npart =particles_p[0].i64;"""]
         for name,field in cls.get_fields():
             if field.index>=idx:
                 ctype=f"{types[field.ftype]}"
-                data=f"particles_p[{idx}+{field.index-idx}*npart+partid]"
+                data=f"particles_p[{idx}+{field.index-idx}*npart+ipart]"
                 out.append(f"      particle->{name:7} ={data}.{ctype} ;")
         out.append('};')
         print('\n'.join(out))
         out=["""void copy_particle_to(__global slot_t *particles_p,
-                   size_t partid,
+                   size_t ipart,
                    Particle *particle){
       size_t npart =particles_p[0].i64;"""]
         for name,field in cls.get_fields():
             if field.index>=idx:
                 ctype=f"{types[field.ftype]}"
-                data=f"particles_p[{idx}+{field.index-idx}*npart+partid]"
+                data=f"particles_p[{idx}+{field.index-idx}*npart+ipart]"
                 out.append(f"      {data}.{ctype}= particle->{name:7};")
+        out.append('};')
+        print('\n'.join(out))
+
+    @classmethod
+    def _gen_cpu_copyparticle(cls):
+        types={'float64':'f64','int64':'i64'}
+        out=["""void copy_single_particle_to(slot_t * restrict part_dst_p,
+                   size_t ipart_dst,
+                   Particle * restrict part_src_p
+                   size_t ipart_src){
+      size_t npart_dst =part_dst_p[0].i64;
+      size_t npart_src =part_src_p[0].i64;"""]
+        idx=cls.mass0.index
+        for name,field in cls.get_fields():
+            if field.index>=idx:
+                #ctype=f"{types[field.ftype]}"
+                dst=f"part_dst_p[{idx}+{field.index-idx}*npart_dst+ipart_dst]"
+                src=f"part_src_p[{idx}+{field.index-idx}*npart_src+ipart_src]"
+                out.append(f"      {dst} =")
+                out.append(f"      {src} ;")
         out.append('};')
         print('\n'.join(out))
 

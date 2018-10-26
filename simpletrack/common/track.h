@@ -1,6 +1,6 @@
-// need definition of check_is_notlost, increase_turn
+// need definition of check_is_notlost, increase_turn, copy_particle_to_dump_element
 
-void track_loop(Particle *const particle_p,
+void track_loop(PARTICLE(particle_p),
                 ELEMENT_MEM slot_t *output_p,
                 ELEMENT_MEM slot_t *elements_p,
                 long nelems,
@@ -20,16 +20,14 @@ void track_loop(Particle *const particle_p,
     for (int iturn=0; iturn<nturns; iturn++){
         for (size_t ielem=0; ielem<nelems; ielem++){
             if (check_is_notlost(particle_p)){
-              // Element-by-element
-              if (particle_p->turns<dump_element_nturns){
-                  copy_particle_to(dump_elements_p,
-                             particle_p->partid*nelems*dump_element_nturns+
-                             ielem*dump_element_nturns+
-                             particle_p->turns,
-                             particle_p);
-              };// end element-by-element
+              // Element dump
+              copy_particle_to_dump_element(
+                          dump_elements_p, particle_p,
+                          ielem, nelems, dump_element_nturns);
+              // Element setup
               elemtype = element[ielem].type;
               elem_p = &elements_p[(element[ielem].address-elem_base)/8];
+              // Jump table
               switch (elemtype){
                 case DriftID:
                   Drift_track((ELEMENT_MEM Drift *) elem_p, particle_p);

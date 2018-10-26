@@ -2,7 +2,7 @@
 #define COMMON_PARTICLE
 
 
-/* python
+/* code_gen python
 import simpletrack as sim
 sim.Particles._gen_common_particle_slots()
 */
@@ -27,7 +27,7 @@ sim.Particles._gen_common_particle_slots()
    INT(islost);          \
 /* end python */
 
-/* python
+/* code_gen python
 import simpletrack as sim
 sim.Particles._gen_common_particle_accessors()
 */
@@ -56,4 +56,5 @@ sim.Particles._gen_common_particle_accessors()
 #define BETA(p) (RVV(p)*BETA0(p))
 #define TAU(p)  (ZETA(p)/BETA(p))
 #define CHARGE(p) (RCHARGE(p)/CHARGE0(p))
+
 #endif

@@ -20,7 +20,7 @@ typedef struct {
     REAL(dy);
 } XYShift;
 
-void XYShift_track(ELEMENT_MEM XYShift *el, PARTICLE pp){
+void XYShift_track(ELEMENT_MEM XYShift *el, PARTICLE(pp)){
     X(pp)-=el->dx;
     Y(pp)-=el->dy;
 };
@@ -30,7 +30,7 @@ typedef struct {
     REAL(sin_z);
 } SRotation;
 
-void SRotation_track(ELEMENT_MEM SRotation *el, PARTICLE pp){
+void SRotation_track(ELEMENT_MEM SRotation *el, PARTICLE(pp) ){
     REAL(const cos_z) = el->cos_z;
     REAL(const sin_z) = el->sin_z;
     REAL() x,y;

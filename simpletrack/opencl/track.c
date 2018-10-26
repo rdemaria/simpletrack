@@ -1,7 +1,7 @@
-#include "common/buffer.h"
+#include "opencl/elementcl.h"
 #include "opencl/particlecl.h"
-#include "opencl/buffercl.h"
 
+#include "common/buffer.h"
 #include "common/aperture.h"
 #include "common/drift.h"
 #include "common/multipole.h"
@@ -20,19 +20,19 @@ __kernel void track(__global slot_t *particles_p,
                     long dump_element_nturns){
 
     // Setup particle
-    size_t partid = get_global_id(0);
+    size_t ipart = get_global_id(0);
 
     // Copy to private
     Particle particle;
     Particle *const particle_p=&particle;
     //printf("CL %d %15.3g\n", particles_p[0].i64,particles_p[4].f64);
-    copy_particle_from(particles_p, partid, particle_p);
+    copy_particle_from(particles_p, ipart, particle_p);
 
     //Track
     track_loop(particle_p, output_p, elements_p,
                nelems, nturns, dump_element_nturns);
 
     // Copy back
-    copy_particle_to(particles_p, partid, particle_p);
+    copy_particle_to(particles_p, ipart, particle_p);
 };
 
