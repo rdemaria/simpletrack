@@ -53,7 +53,7 @@ class DriftExact(CObject):
 
 class Multipole(CObject):
     _typeid = 4
-    order = CField(0, 'int64',   default=0)
+    order = CField(0, 'int64',   const=True, default=0)
     length = CField(1, 'float64',    default=0.0)
     hxl = CField(2, 'float64',    default=0.0)
     hyl = CField(3, 'float64',    default=0.0)
@@ -83,7 +83,7 @@ class Multipole(CObject):
 
 class RFMultipole(CObject):
     _typeid = 10
-    order = CField(0, 'int64',   default=0)
+    order = CField(0, 'int64',   const=True, default=0)
     length = CField(1, 'float64',    default=0.0)
     bal = CField(2, 'float64',    default=0.0,
                  length='4 * order + 2')
@@ -174,7 +174,7 @@ class Monitor(CObject):
     ref = CField(4, 'int64', default=0)
 
 
-class Elements():
+class Elements(object):
     element_types = {'Cavity': Cavity,
                      'Drift': Drift,
                      'DriftExact': DriftExact,

@@ -42,6 +42,7 @@ elif len(sys.argv)==3:
         check_file(filename)
     elif sys.argv[1]=='-d':
         inplace="diff"
+        filename=sys.argv[2]
         check_file(filename)
     else:
        print(usage)

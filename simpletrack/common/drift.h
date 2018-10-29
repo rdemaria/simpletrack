@@ -11,7 +11,6 @@ typedef struct {
     REAL(length);
 } Drift;
 
-
 void Drift_track(ELEMENT_MEM Drift *el, PARTICLE(pp)){
     REAL(const length) = el->length;
     ELEMENT_START
@@ -35,4 +34,3 @@ void DriftExact_track(ELEMENT_MEM Drift *el, PARTICLE(pp)){
         ZETA(pp) += length*RVV(pp) - opd*lpzi;
     ELEMENT_STOP
 };
-

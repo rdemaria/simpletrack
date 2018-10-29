@@ -29,12 +29,14 @@ class Particles(CObject):
     p0c    =CField( 2,'float64',length='nparticles',default=0,setter=_set_p0c)
     beta0  =CField( 3,'float64',length='nparticles',default=1)
     charge0=CField( 4,'float64',length='nparticles',default=1)
+    #s
     x      =CField( 5,'float64',length='nparticles',default=0)
     px     =CField( 6,'float64',length='nparticles',default=0)
     y      =CField( 7,'float64',length='nparticles',default=0)
     py     =CField( 8,'float64',length='nparticles',default=0)
     zeta   =CField( 9,'float64',length='nparticles',default=0)
     delta  =CField(10,'float64',length='nparticles',default=0,setter=_set_delta)
+    #psisgma
     rpp    =CField(11,'float64',length='nparticles',default=1)
     rvv    =CField(12,'float64',length='nparticles',default=1)
     rmass  =CField(13,'float64',length='nparticles',default=1)
@@ -43,7 +45,7 @@ class Particles(CObject):
     partid =CField(16,'int64',length='nparticles',default=0)
     turns  =CField(17,'int64',length='nparticles',default=0)
     islost =CField(18,'int64',length='nparticles',default=0)
-
+    #elemid
 
     def __init__(self,cbuffer=None,nparticles=0, partid=None,**nargs):
         if partid is None:

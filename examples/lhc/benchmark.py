@@ -10,7 +10,7 @@ import simpletrack as sim
 
 def speed(cljob,npart=20000,turns=10,trials=1):
   particles = sim.Particles(nparticles=npart)
-  particles.p0c=7000e6
+  particles.p0c=7000e9
   particles.px=np.linspace(0,0.000001,npart)
   cljob.set_particles(particles)
   avg=0
@@ -59,6 +59,7 @@ line, rest, iconv = six.expand_struct(convert=elements.gen_builder())
 particles = sim.Particles(nparticles=1)
 particles.p0c=7000e6
 cljob = sim.TrackJobCL(particles, elements, device=device,dump_element=0)
+cljob.print_devices()
 
 print(f"turns    npart t/turn[ms] t/turn/part[us]")
 sp1,rsp1=speed(cljob,1,turns)

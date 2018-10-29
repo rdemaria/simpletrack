@@ -17,11 +17,11 @@ clro = mf.READ_ONLY | mf.COPY_HOST_PTR
 
 class TrackJobCL(object):
     @classmethod
-    def print_devices(cls):
+    def print_available_devices(cls):
         for np, platform in enumerate(pyopencl.get_platforms()):
-            print(f"{np}: {platform.name}")
+            print(f"Platform '{np}'  : {platform.name}")
             for nd, device in enumerate(platform.get_devices()):
-                print(f"{np}.{nd}: {device.name}")
+                print(f"  Device '{np}.{nd}': {device.name}")
 
     def build_program(self, src=None ,debug=True):
         if src is None:
@@ -111,3 +111,6 @@ class TrackJobCL(object):
         pyopencl.enqueue_copy(self.queue,
                               self.output_buf,
                               self.output_g)
+    def print_devices(self):
+        for dev in self.ctx.devices:
+            print(f"Device: {dev.name}")

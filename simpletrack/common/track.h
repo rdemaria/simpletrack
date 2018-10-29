@@ -18,6 +18,7 @@ void track_loop(PARTICLE(particle_p),
 
     // Track
     for (int iturn=0; iturn<nturns; iturn++){
+    //for (; pp->turns<nturns;){
         for (size_t ielem=0; ielem<nelems; ielem++){
             if (check_is_notlost(particle_p)){
               // Element dump
