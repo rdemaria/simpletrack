@@ -56,6 +56,7 @@ def test_multipole():
     pdata=dict(mass0=3,p0c=4,px=1e-3,py=2e-3,x=1e-3,y=2e-3,delta=1)
     assert mktest(pdata,3e-16,2e-16,'Multipole',knl=[0,3.],ksl=[2.],length=1.0,hxl=1e-3)
     assert mktest(pdata,3e-16,2e-16,'Multipole',knl=[0,3.],ksl=[2.],length=1.0,hxl=1e-3,hyl=1e-3)
+    assert mktest(pdata,3e-16,2e-16,'Multipole',knl=[1e-3,3.],ksl=[2.],length=1.0,hxl=1e-3)
 
 #
 ##Align
