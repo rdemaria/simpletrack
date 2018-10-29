@@ -78,7 +78,7 @@ class Multipole(CObject):
             nbal[1::2] /= _factorial[:order+1]
         else:
             nbal[:len(bal)] = bal
-        CObject.__init__(self, order=order, bal=nbal,**nargs)
+        CObject.__init__(self, order=order, bal=nbal, **nargs)
 
 
 class RFMultipole(CObject):
@@ -88,10 +88,10 @@ class RFMultipole(CObject):
     bal = CField(2, 'float64',    default=0.0,
                  length='4 * order + 2')
 
-    def __init__(self, cbuffer=None,
+    def __init__(self,
                  knl=None, ksl=None,
                  phn=None, phs=None,
-                 order=None, bal=None):
+                 order=None, bal=None, **nargs):
         if order is None:
             if bal is None:
                 order = max(len(knl), len(ksl))-1
@@ -107,8 +107,8 @@ class RFMultipole(CObject):
             nbal[4:len(phs)*2:4] = phs
         else:
             nbal[:len(bal)] = bal
-        CObject.__init__(self, cbuffer=cbuffer, order=order, length=length,
-                         hxl=hxl, hyl=hyl, bal=nbal)
+        CObject.__init__(self, order=order, length=length,
+                         hxl=hxl, hyl=hyl, bal=nbal, **nargs)
 
 
 class Cavity(CObject):
@@ -117,13 +117,13 @@ class Cavity(CObject):
     kfreq = CField(1, 'float64', default=0.0)
     phase = CField(2, 'float64', default=0.0)
 
-    def __init__(self, cbuffer=None, voltage=0.0, frequency=0, lag=0):
+    def __init__(self, voltage=0.0, frequency=0, lag=0, **nargs):
         kfreq = 2*np.pi*frequency/_clight
         phase = lag/180*np.pi
-        CObject.__init__(self, cbuffer=cbuffer,
+        CObject.__init__(self,
                          voltage=voltage,
                          kfreq=kfreq,
-                         phase=phase)
+                         phase=phase, **nargs)
 
 
 class XYShift(CObject):
@@ -137,11 +137,11 @@ class SRotation(CObject):
     cos_z = CField(0, 'float64',   default=1.0)
     sin_z = CField(1, 'float64',   default=0.0)
 
-    def __init__(self, cbuffer=None, angle=0, **nargs):
+    def __init__(self, angle=0, **nargs):
         anglerad = angle/180*np.pi
         cos_z = np.cos(anglerad)
         sin_z = np.sin(anglerad)
-        CObject.__init__(self, cbuffer=cbuffer,
+        CObject.__init__(self,
                          cos_z=cos_z, sin_z=sin_z,**nargs)
 
 
@@ -190,6 +190,7 @@ class Elements(object):
 
     def _mk_fun(self, buff, cls):
         def fun(*args, **nargs):
+            #print(cls.__name__,nargs)
             return cls(cbuffer=buff, **nargs)
         return fun
 
@@ -197,6 +198,13 @@ class Elements(object):
     def fromfile(cls, filename):
         cbuffer = CBuffer.fromfile(filename)
         return cls(cbuffer=cbuffer)
+
+    @classmethod
+    def fromline(cls,line):
+        self=cls()
+        for label, element_name, element in line:
+            getattr(self,element_name)(**element._asdict())
+        return self
 
     def tofile(self, filename):
         self.cbuffer.tofile(filename)
