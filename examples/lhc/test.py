@@ -25,8 +25,6 @@ elements=sim.Elements()
 lhc = sixtracktools.SixInput('.')
 line, rest, iconv = lhc.expand_struct(convert=elements.gen_builder())
 
-#elements.Monitor(turns=nturns)
-
 cljob = sim.TrackJobCL(particles, elements, device="0.0",dump_element=nturns)
 cljob.track()
 cljob.collect()
@@ -34,10 +32,37 @@ out=cljob.dump_element
 
 refline, rest, iconv = lhc.expand_struct(convert=pysixtrack.element_types)
 refline= pysixtrack.Line(elements=[l[2] for l in refline ])
-
+refline.elements.append(pysixtrack.Monitor())
 
 prun=pysixtrack.Particles(p0c=7000e9,x=x0)
 refout=refline.track_elem_by_elem(prun)
 
 refx=np.array([p.x for p in refout])
+refzeta=np.array([p.zeta for p in refout])
+
+plot(out.x - refx)
+plot(out.zeta - refzeta)
+
+
+#turn-by-turn
+nturn=128
+elements.Monitor(turns=nturn)
+particles = sim.Particles(nparticles=npart)
+particles.p0c=7000e9
+particles.x=x0
+
+prun=pysixtrack.Particles(p0c=7000e9,x=x0)
+refline.elements.append(pysixtrack.Monitor())
+
+for n in range(nturn):
+    refline.track()
+
+cljob.set_particles(particles)
+cljob.track(nturn)
+cljob.collect(nturn)
+
+
+
+
+
 
