@@ -55,11 +55,11 @@ prun=pysixtrack.Particles(p0c=7000e9,x=x0)
 refline.elements.append(pysixtrack.Monitor())
 
 for n in range(nturn):
-    refline.track()
+    refline.track(prun)
 
 cljob.set_particles(particles)
 cljob.track(nturn)
-cljob.collect(nturn)
+cljob.collect()
 
 
 
