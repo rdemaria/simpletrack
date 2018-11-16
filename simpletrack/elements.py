@@ -142,16 +142,20 @@ class SRotation(CObject):
         cos_z = np.cos(anglerad)
         sin_z = np.sin(anglerad)
         CObject.__init__(self,
-                         cos_z=cos_z, sin_z=sin_z,**nargs)
+                         cos_z=cos_z, sin_z=sin_z, **nargs)
 
 
 class BeamBeam4D(CObject):
     _typeid = 8
-    size = CField(0, 'uint64', default=0)
+    size = CField(0, 'uint64', const=True, default=0)
     data = CField(1, 'float64',   default=0.0,
                   length='size', pointer=True)
 
-    def __init__(self, data, **kwargs):
+    def __init__(self, **kwargs):
+        slots = ('q_part', 'N_part', 'sigma_x', 'sigma_y', 'beta_s',
+                 'min_sigma_diff', 'Delta_x', 'Delta_y', 'Dpx_sub', 'Dpy_sub', 'enabled')
+
+        data = [kwargs[ss] for ss in slots]
         CObject.__init__(self, size=len(data), data=data, **kwargs)
 
 
@@ -161,7 +165,9 @@ class BeamBeam6D(CObject):
     data = CField(1, 'float64',   default=0.0,
                   length='size', pointer=True)
 
-    def __init__(self, data, **kwargs):
+    def __init__(self, **kwargs):
+        import pysixtrack
+        data = pysixtrack.BB6Ddata.BB6D_init(**kwargs)
         CObject.__init__(self, size=len(data), data=data, **kwargs)
 
 
@@ -190,7 +196,7 @@ class Elements(object):
 
     def _mk_fun(self, buff, cls):
         def fun(*args, **nargs):
-            #print(cls.__name__,nargs)
+            # print(cls.__name__,nargs)
             return cls(cbuffer=buff, **nargs)
         return fun
 
@@ -200,10 +206,10 @@ class Elements(object):
         return cls(cbuffer=cbuffer)
 
     @classmethod
-    def fromline(cls,line):
-        self=cls()
+    def fromline(cls, line):
+        self = cls()
         for label, element_name, element in line:
-            getattr(self,element_name)(**element._asdict())
+            getattr(self, element_name)(**element._asdict())
         return self
 
     def tofile(self, filename):
@@ -224,7 +230,7 @@ class Elements(object):
             out[name] = getattr(self, name)
         return out
 
-    def set_monitors(self,offset=0):
+    def set_monitors(self, offset=0):
         monitorid = self.element_types['Monitor']._typeid
         monitors = []
         nmonitor = 0
@@ -240,5 +246,5 @@ class Elements(object):
         n = self.cbuffer.n_objects
         return [self.cbuffer.get_object(i) for i in range(n)]
 
-    def get(self,objid):
+    def get(self, objid):
         return self.cbuffer.get_object(objid)
