@@ -230,6 +230,13 @@ class Elements(object):
             out[name] = getattr(self, name)
         return out
 
+    def get_elements(self):
+        n = self.cbuffer.n_objects
+        return [self.cbuffer.get_object(i) for i in range(n)]
+
+    def get(self, objid):
+        return self.cbuffer.get_object(objid)
+
     def set_monitors(self, offset=0):
         monitorid = self.element_types['Monitor']._typeid
         monitors = []
@@ -242,9 +249,3 @@ class Elements(object):
                 nmonitor += 1
         return monitors
 
-    def get_elements(self):
-        n = self.cbuffer.n_objects
-        return [self.cbuffer.get_object(i) for i in range(n)]
-
-    def get(self, objid):
-        return self.cbuffer.get_object(objid)
