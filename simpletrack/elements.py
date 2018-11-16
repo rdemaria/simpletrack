@@ -167,7 +167,7 @@ class BeamBeam6D(CObject):
 
     def __init__(self, **kwargs):
         import pysixtrack
-        data = pysixtrack.BB6Ddata.BB6D_init(**kwargs)
+        data = pysixtrack.BB6Ddata.BB6D_init(**{kk: kwargs[kk] for kk in kwargs.keys() if kk != 'cbuffer'}).tobuffer()
         CObject.__init__(self, size=len(data), data=data, **kwargs)
 
 
