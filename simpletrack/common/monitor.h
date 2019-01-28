@@ -12,27 +12,29 @@
 
 
 typedef struct {
-    INT(turns);
-    INT(start);
-    INT(skip);
-    INT(rolling);
-    INT(ref);
+    ELEMENT_INT(turns);
+    ELEMENT_INT(start);
+    ELEMENT_INT(skip);
+    ELEMENT_INT(rolling);
+    ELEMENT_INT(ref);
 } Monitor;
 
 
 void Monitor_track(ELEMENT_MEM Monitor *el,
-                               Particle *pp,
+                               PARTICLE(pp),
                                ELEMENT_MEM slot_t *output){
-    INT(const shifted) = (pp->turns-el->start);
-    if (shifted%el->skip==0 ){
-       INT(pos)= (shifted/el->skip);
-       if (el->rolling==1) pos=pos%el->turns;
-       if (pos >= 0 && pos < el->turns) {
-         size_t partid = pos + pp->partid*el->turns;
-         ELEMENT_MEM slot_t *particles_p =
-                                  get_object_pointer(output, el->ref);
-         copy_particle_to(particles_p, partid, pp);
-       };
-    };
+    ELEMENT_START
+         TEMP_INT(const shifted) = (TURNS(pp)-el->start);
+         if (shifted%el->skip==0 ){
+            TEMP_INT(pos)= (shifted/el->skip);
+            if (el->rolling==1) pos=pos%el->turns;
+            if (pos >= 0 && pos < el->turns) {
+              size_t partid = pos + PARTID(pp)*el->turns;
+              ELEMENT_MEM slot_t *particles_p =
+                                       get_object_pointer(output, el->ref);
+              copy_particle_to(particles_p, partid, PARTICLE_SELF(pp));
+            };
+         };
+    ELEMENT_STOP
 };
 

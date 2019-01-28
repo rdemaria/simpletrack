@@ -23,7 +23,7 @@ job=sim.TrackJobCL(particles, elements)
 job.track(10)
 job.collect()
 
-job.monitor[0].x.reshape(5,-1)
+print(job.monitor[0].x.reshape(5,-1))
 
 
 

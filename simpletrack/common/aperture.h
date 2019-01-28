@@ -3,11 +3,12 @@
 #endif
 
 
-int check_bounds(Particle *p, double bound){
-    if (X(p)> bound) return 1;
-    if (X(p)<-bound) return 1;
-    if (Y(p)> bound) return 1;
-    if (Y(p)<-bound) return 1;
-    return 0;
+void check_bounds(PARTICLE(pp), double bound, size_t ielem){
+    ELEMENT_START
+       if (!( (X(pp) < bound) && (X(pp) > - bound) &&
+              (Y(pp) < bound) && (Y(pp) > - bound)   ) )
+       {
+           ISLOST(pp)=-ielem;
+       }
+    ELEMENT_STOP
 };
-

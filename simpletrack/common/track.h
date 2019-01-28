@@ -32,11 +32,11 @@ void track_loop(PARTICLE(particle_p),
               switch (elemtype){
                 case DriftID:
                   Drift_track((ELEMENT_MEM Drift *) elem_p, particle_p);
-                  if (check_bounds(particle_p,1.0)) particle_p->islost=-ielem;
+                  check_bounds(particle_p,1.0,ielem);
                   break;
                 case DriftExactID:
                   DriftExact_track((ELEMENT_MEM Drift *) elem_p, particle_p);
-                  if (check_bounds(particle_p,1.0)) particle_p->islost=-ielem;
+                  check_bounds(particle_p,1.0,ielem);
                   break;
                 case MultipoleID:
                   Multipole_track((ELEMENT_MEM Multipole *) elem_p, particle_p);

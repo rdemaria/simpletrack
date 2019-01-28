@@ -5,6 +5,9 @@
 #define PARTICLE_GET(p,name) p->name
 #define REAL(name) double name
 #define INT(name) long name
+#define TEMP_REAL(name) double name
+#define TEMP_INT(name) long name
+#define PARTICLE_SELF(pp) pp
 
 /*! code_gen python
 import simpletrack as sim
@@ -31,47 +34,47 @@ void copy_particle_from(__global slot_t *particles_p,
                    size_t ipart,
                    Particle *particle){
       size_t npart =particles_p[0].i64;
-      particle->mass0   =particles_p[1+0*npart+ipart].f64 ;
-      particle->p0c     =particles_p[1+1*npart+ipart].f64 ;
-      particle->beta0   =particles_p[1+2*npart+ipart].f64 ;
-      particle->charge0 =particles_p[1+3*npart+ipart].f64 ;
-      particle->x       =particles_p[1+4*npart+ipart].f64 ;
-      particle->px      =particles_p[1+5*npart+ipart].f64 ;
-      particle->y       =particles_p[1+6*npart+ipart].f64 ;
-      particle->py      =particles_p[1+7*npart+ipart].f64 ;
-      particle->zeta    =particles_p[1+8*npart+ipart].f64 ;
-      particle->delta   =particles_p[1+9*npart+ipart].f64 ;
-      particle->rpp     =particles_p[1+10*npart+ipart].f64 ;
-      particle->rvv     =particles_p[1+11*npart+ipart].f64 ;
-      particle->rmass   =particles_p[1+12*npart+ipart].f64 ;
-      particle->rcharge =particles_p[1+13*npart+ipart].f64 ;
-      particle->chi     =particles_p[1+14*npart+ipart].f64 ;
-      particle->partid  =particles_p[1+15*npart+ipart].i64 ;
-      particle->turns   =particles_p[1+16*npart+ipart].i64 ;
-      particle->islost  =particles_p[1+17*npart+ipart].i64 ;
+      particle->mass0   =particles_p[2+0*npart+ipart].f64 ;
+      particle->p0c     =particles_p[2+1*npart+ipart].f64 ;
+      particle->beta0   =particles_p[2+2*npart+ipart].f64 ;
+      particle->charge0 =particles_p[2+3*npart+ipart].f64 ;
+      particle->x       =particles_p[2+4*npart+ipart].f64 ;
+      particle->px      =particles_p[2+5*npart+ipart].f64 ;
+      particle->y       =particles_p[2+6*npart+ipart].f64 ;
+      particle->py      =particles_p[2+7*npart+ipart].f64 ;
+      particle->zeta    =particles_p[2+8*npart+ipart].f64 ;
+      particle->delta   =particles_p[2+9*npart+ipart].f64 ;
+      particle->rpp     =particles_p[2+10*npart+ipart].f64 ;
+      particle->rvv     =particles_p[2+11*npart+ipart].f64 ;
+      particle->rmass   =particles_p[2+12*npart+ipart].f64 ;
+      particle->rcharge =particles_p[2+13*npart+ipart].f64 ;
+      particle->chi     =particles_p[2+14*npart+ipart].f64 ;
+      particle->partid  =particles_p[2+15*npart+ipart].i64 ;
+      particle->turns   =particles_p[2+16*npart+ipart].i64 ;
+      particle->islost  =particles_p[2+17*npart+ipart].i64 ;
 };
 void copy_particle_to(__global slot_t *particles_p,
                    size_t ipart,
                    Particle *particle){
       size_t npart =particles_p[0].i64;
-      particles_p[1+0*npart+ipart].f64= particle->mass0  ;
-      particles_p[1+1*npart+ipart].f64= particle->p0c    ;
-      particles_p[1+2*npart+ipart].f64= particle->beta0  ;
-      particles_p[1+3*npart+ipart].f64= particle->charge0;
-      particles_p[1+4*npart+ipart].f64= particle->x      ;
-      particles_p[1+5*npart+ipart].f64= particle->px     ;
-      particles_p[1+6*npart+ipart].f64= particle->y      ;
-      particles_p[1+7*npart+ipart].f64= particle->py     ;
-      particles_p[1+8*npart+ipart].f64= particle->zeta   ;
-      particles_p[1+9*npart+ipart].f64= particle->delta  ;
-      particles_p[1+10*npart+ipart].f64= particle->rpp    ;
-      particles_p[1+11*npart+ipart].f64= particle->rvv    ;
-      particles_p[1+12*npart+ipart].f64= particle->rmass  ;
-      particles_p[1+13*npart+ipart].f64= particle->rcharge;
-      particles_p[1+14*npart+ipart].f64= particle->chi    ;
-      particles_p[1+15*npart+ipart].i64= particle->partid ;
-      particles_p[1+16*npart+ipart].i64= particle->turns  ;
-      particles_p[1+17*npart+ipart].i64= particle->islost ;
+      particles_p[2+0*npart+ipart].f64= particle->mass0  ;
+      particles_p[2+1*npart+ipart].f64= particle->p0c    ;
+      particles_p[2+2*npart+ipart].f64= particle->beta0  ;
+      particles_p[2+3*npart+ipart].f64= particle->charge0;
+      particles_p[2+4*npart+ipart].f64= particle->x      ;
+      particles_p[2+5*npart+ipart].f64= particle->px     ;
+      particles_p[2+6*npart+ipart].f64= particle->y      ;
+      particles_p[2+7*npart+ipart].f64= particle->py     ;
+      particles_p[2+8*npart+ipart].f64= particle->zeta   ;
+      particles_p[2+9*npart+ipart].f64= particle->delta  ;
+      particles_p[2+10*npart+ipart].f64= particle->rpp    ;
+      particles_p[2+11*npart+ipart].f64= particle->rvv    ;
+      particles_p[2+12*npart+ipart].f64= particle->rmass  ;
+      particles_p[2+13*npart+ipart].f64= particle->rcharge;
+      particles_p[2+14*npart+ipart].f64= particle->chi    ;
+      particles_p[2+15*npart+ipart].i64= particle->partid ;
+      particles_p[2+16*npart+ipart].i64= particle->turns  ;
+      particles_p[2+17*npart+ipart].i64= particle->islost ;
 };
 /* end python*/
 
