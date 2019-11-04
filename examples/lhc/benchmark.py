@@ -5,7 +5,9 @@ import time, sys
 import numpy as np
 
 import sixtracktools
+import pysixtrack
 import simpletrack as sim
+
 
 
 def speed(cljob,npart=20000,turns=10,trials=1):
@@ -53,8 +55,10 @@ else:
 
 elements=sim.Elements()
 
-six = sixtracktools.SixInput('.')
-line, rest, iconv = six.expand_struct(convert=elements.gen_builder())
+six = sixtracktools.SixInput(".")
+line, other = pysixtrack.Line.from_sixinput(six,classes=elements.gen_builder_class())
+iconv = other["iconv"]
+
 
 particles = sim.Particles(nparticles=1)
 particles.p0c=7000e6

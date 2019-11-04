@@ -230,6 +230,13 @@ class Elements(object):
             out[name] = getattr(self, name)
         return out
 
+    def gen_builder_class(self):
+        class out:
+            pass
+        for name, cls in self.element_types.items():
+            setattr(out,name,getattr(self, name))
+        return out
+
     def get_elements(self):
         n = self.cbuffer.n_objects
         return [self.cbuffer.get_object(i) for i in range(n)]
