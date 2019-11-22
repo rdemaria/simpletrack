@@ -1,0 +1,16 @@
+docker pull debian
+docker run -i -t debian /bin/bash
+
+apt update
+apt install python3 python3-pip python3-pyopencl git
+
+git clone https://github.com/rdemaria/simpletrack
+
+cd simpletrack
+pip3 install -e .
+
+cd examples/lhc
+
+python3 bench20k.py
+
+
