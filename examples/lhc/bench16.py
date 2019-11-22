@@ -24,7 +24,7 @@ elements=sim.Elements.fromfile("line.bin")
 particles = sim.Particles(nparticles=1)
 
 device="0.0"
-npart=20000
+npart=16
 nturn=15
 
 for device in sim.TrackJobCL.get_available_devices():
