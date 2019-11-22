@@ -46,9 +46,9 @@ def log_gen(base,steps,maxexp,extra):
 out={}
 for label,device in devices.items():
     out[label]=[]
-    for npart in log_gen(base=4,steps=1,maxexp=8,extra=1):
-    #for npart in [5000]:
-        for nturn in [15]:
+    #for npart in log_gen(base=4,steps=2,maxexp=8,extra=1):
+    for npart in [5000]:
+        for nturn in [1,10,20,30]:
            print(label, npart,nturn)
            cljob = sim.TrackJobCL(particles, elements, device=device,dump_element=0)
            duration=speed(cljob,npart,nturn)
