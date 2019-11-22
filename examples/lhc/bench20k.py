@@ -27,8 +27,8 @@ device="0.0"
 npart=20000
 nturn=15
 
-cljob = sim.TrackJobCL(particles, elements, device=device,dump_element=0)
-duration=speed(cljob,npart,nturn)
-
-print(f"{cljob.ctx.devices[0].name}, {npart} particles, {nturn} turns,"
-        f" {(npart*nturn)/duration:.0f} particles*turns/seconds")
+for device in sim.TrackJobCL.get_available_devices():
+    cljob = sim.TrackJobCL(particles, elements, device=device,dump_element=0)
+    duration=speed(cljob,npart,nturn)
+    print(f"device '{device}', {npart} particles, {nturn} turns,"
+        f" {(npart*nturn)/duration:.0f} particles*turns/seconds, {cljob.ctx.devices[0].name}")

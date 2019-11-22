@@ -19,9 +19,16 @@ class TrackJobCL(object):
     @classmethod
     def print_available_devices(cls):
         for np, platform in enumerate(pyopencl.get_platforms()):
-            print(f"Platform '{np}'  : {platform.name}")
+            print(f"Platform : {platform.name}")
             for nd, device in enumerate(platform.get_devices()):
                 print(f"  Device '{np}.{nd}': {device.name}")
+
+    @classmethod
+    def get_available_devices(cls):
+        for np, platform in enumerate(pyopencl.get_platforms()):
+            for nd, device in enumerate(platform.get_devices()):
+                yield f'{np}.{nd}'
+
 
     def build_program(self, src=None ,debug=True):
         if src is None:
