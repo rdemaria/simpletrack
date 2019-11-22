@@ -4,8 +4,6 @@ import time, sys
 
 import numpy as np
 
-import sixtracktools
-import pysixtrack
 import simpletrack as sim
 
 
@@ -53,11 +51,8 @@ else:
     stop='long'
     fact=3
 
-elements=sim.Elements()
-
-six = sixtracktools.SixInput(".")
-line, other = pysixtrack.Line.from_sixinput(six,classes=elements.gen_builder_class())
-iconv = other["iconv"]
+# generate with python mk_line.py
+elements=sim.Elements.fromfile("line.bin")
 
 
 particles = sim.Particles(nparticles=1)
