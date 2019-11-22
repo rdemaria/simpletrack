@@ -30,5 +30,6 @@ nturn=15
 for device in sim.TrackJobCL.get_available_devices():
     cljob = sim.TrackJobCL(particles, elements, device=device,dump_element=0)
     duration=speed(cljob,npart,nturn)
-    print(f"device '{device}', {npart} particles, {nturn} turns,"
-        f" {(npart*nturn)/duration:.0f} particles*turns/seconds, {cljob.ctx.devices[0].name}")
+    print( f"{(npart*nturn)/duration:.0f} particles*turns/seconds, "
+           f"{npart} particles, {nturn} turns, "
+           f"device '{device}', {cljob.ctx.devices[0].name}")
