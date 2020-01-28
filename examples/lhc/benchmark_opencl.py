@@ -23,7 +23,7 @@ elements=sim.Elements.fromfile("line.bin")
 particles = sim.Particles(nparticles=1)
 
 parser = argparse.ArgumentParser(description='Simpletrack benchmark')
-parser.add_argument('-d','--device',dest='device',default='0.0',help='OpenCL device to use')
+parser.add_argument('-d','--device',dest='device',help='OpenCL device to use')
 parser.add_argument('-p','--particles',dest='npart',type=int,default=20000,help='Number of particles')
 parser.add_argument('-t','--turns',dest='nturn',type=int,default=15,help='Number of turns')
 parser.add_argument('-s','--show',dest='show',action='store_true',help='List available devices')
@@ -34,9 +34,14 @@ if (args.show):
   sim.TrackJobCL.print_available_devices()
 
 else:
-  for args.device in sim.TrackJobCL.get_available_devices():
-    cljob = sim.TrackJobCL(particles, elements, device=args.device,dump_element=0)   
+
+  if (args.device):
+      devices = args.device.split()
+  else:
+      devices = sim.TrackJobCL.get_available_devices()
+  for device in devices:
+    cljob = sim.TrackJobCL(particles, elements, device=device,dump_element=0)   
     duration=speed(cljob,args.npart,args.nturn)
     print( f"{(args.npart*args.nturn)/duration:9.0f} particles*turns/seconds, "
-          f"{args.npart} particles, {args.nturn} turns, "
-          f"device '{args.device}', {cljob.ctx.devices[0].name}")
+           f"{args.npart} particles, {args.nturn} turns, "
+           f"device '{device}', {cljob.ctx.devices[0].name}")
